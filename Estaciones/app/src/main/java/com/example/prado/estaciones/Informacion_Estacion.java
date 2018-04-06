@@ -24,6 +24,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
@@ -57,14 +60,14 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
     private Button Cargar, Compartir, Nuevo;
     private TextView FechaI, FechaF, EFechaI, EFechaF;
     final Calendar calendar = Calendar.getInstance();
-    SimpleDateFormat dateFormat = new SimpleDateFormat("dd/mm/aaaa");
     LineDataSet lineDataSet;
     LineData datos;
     private int DiaI, MesI, AnioI, DiaF, MesF, AnioF;
-    private String CSV = "Fecha,Tmax,Tmin,UC\n";
-    String nombre;
+    private String CSV = "Fecha,Tmax,Tmin,UCD,UCA\n";
+    String nombre,NombreEstacion;
     private ArrayList<String> DatosEnEjeX = new ArrayList<>();
     private ArrayList<Entry> DatosEnEjeY = new ArrayList<>();
+    private ArrayList<Entry> AcumuladoEnEjeY = new ArrayList<>();
     private ArrayList<ILineDataSet> lineDataSets = new ArrayList<>();
     ArrayList<UnidadesCalor> listUC = new ArrayList<UnidadesCalor>();
 
@@ -86,15 +89,17 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
         Compartir.setVisibility(View.INVISIBLE);
         FechaI = (TextView) findViewById(R.id.FechaI);
         FechaF = (TextView) findViewById(R.id.FechaF);
-        EFechaF = (TextView) findViewById(R.id.FF);
-        EFechaI = (TextView) findViewById(R.id.FI);
         Cargar.setOnClickListener(this);
         Nuevo.setOnClickListener(this);
         Compartir.setOnClickListener(this);
         FechaI.setOnClickListener(this);
         FechaF.setOnClickListener(this);
         lineChart.setNoDataText("Sin datos para mostrar");
-    }
+
+        NombreEstacion = getIntent().getStringExtra("Nombre");
+        File path = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "Consultas_UCD");
+        path.mkdir();
+      }
 
 
     DatePickerDialog.OnDateSetListener dI = new DatePickerDialog.OnDateSetListener() {
@@ -224,26 +229,50 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
         @Override
         protected void onPostExecute(List<UnidadesCalor> result) {
             super.onPostExecute(result);
+            double acomulado = 0;
             if (result != null) {
                 for (int i = 0; i < result.size(); i++) {
-                    DatosEnEjeY.add(new Entry(i, (float) UnidadesCalor(result.get(i).getTmax(), result.get(i).getTmin())));
-                    CSV += result.get(i).getFecha() + "," + result.get(i).getTmax() + "," + result.get(i).getTmin() + "," + UnidadesCalor(result.get(i).getTmax(), result.get(i).getTmin()) + "\n";
+                    acomulado += UnidadesCalor(result.get(i).getTmax(), result.get(i).getTmin());
+                    DatosEnEjeY.add(new Entry(i+1, (float) UnidadesCalor(result.get(i).getTmax(), result.get(i).getTmin())));
+                    AcumuladoEnEjeY.add(new Entry(i+1,(float)acomulado));
+                    CSV += result.get(i).getFecha() + "," + result.get(i).getTmax() + "," + result.get(i).getTmin() + "," + UnidadesCalor(result.get(i).getTmax(), result.get(i).getTmin()) +","+ acomulado +"\n";
                 }
-                lineDataSet = new LineDataSet(DatosEnEjeY, "Unidades calor del " + FechaI.getText().toString() + " al " + FechaF.getText().toString());
+
+                LineDataSet lineDataSetAcomulado = new LineDataSet(AcumuladoEnEjeY,"Acomulado UCD");
+                lineDataSet = new LineDataSet(DatosEnEjeY, "UCD del " + FechaI.getText().toString() + " al " + FechaF.getText().toString());
+
                 //lineDataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-                lineDataSet.setDrawFilled(true);
+                lineDataSet.setDrawFilled(false);
                 lineDataSet.setDrawCircles(false);
-                lineDataSet.setColor(Color.GREEN);
-                lineDataSet.setValueTextSize(8);
-                lineDataSet.setValueTextColor(Color.WHITE);
+                lineDataSet.setLineWidth(1.5f);
+                lineDataSet.setColor(Color.rgb(38,127,14));
+                lineDataSet.setValueTextSize(10f);
+                lineDataSet.setValueTextColor(Color.BLACK);
+                lineDataSet.setAxisDependency(YAxis.AxisDependency.RIGHT);
                 lineDataSets.add(lineDataSet);
+
+                lineDataSetAcomulado.setDrawFilled(false);
+                lineDataSetAcomulado.setDrawCircles(false);
+                lineDataSetAcomulado.setLineWidth(1.5f);
+                lineDataSetAcomulado.setColor(Color.rgb(254,0,0));
+                lineDataSetAcomulado.setValueTextSize(10f);
+                lineDataSetAcomulado.setValueTextColor(Color.BLACK);
+                lineDataSetAcomulado.setAxisDependency(YAxis.AxisDependency.LEFT);
+
+                lineDataSets.add(lineDataSetAcomulado);
 
                 datos = new LineData(lineDataSets);
 
-                lineChart.setData(datos);
+                Description descripcion = new Description();
+                descripcion.setText("");
 
-                lineChart.setVisibleXRangeMaximum(100f);
-                lineChart.animateX(1500);
+
+                lineChart.setClickable(false);
+                lineChart.setData(datos);
+                lineChart.setDescription(descripcion);
+                lineChart.setVisibleXRangeMaximum(result.size());
+                lineChart.animateX(2000);
+                lineChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
 
                 lineChart.invalidate();
             } else {
@@ -270,44 +299,41 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
         Cargar.setVisibility(View.INVISIBLE);
         FechaI.setVisibility(View.INVISIBLE);
         FechaF.setVisibility(View.INVISIBLE);
-        EFechaI.setVisibility(View.INVISIBLE);
-        EFechaF.setVisibility(View.INVISIBLE);
         Compartir.setVisibility(View.VISIBLE);
         Nuevo.setVisibility(View.VISIBLE);
     }
 
     private void Compartir() {
 
-        File path = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), nombre);
+        File path = new File(Environment.getExternalStorageDirectory().getAbsolutePath(),"/" + "Consultas_UCD/" + nombre);
 
 
         File fileWithinMyDir = new File(path.getPath());
 
         if (fileWithinMyDir.exists()) {
             Intent intentShareFile = new Intent(Intent.ACTION_SEND);
-            intentShareFile.setType("text/*");
-            intentShareFile.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://" + path.getPath()));
-
+            intentShareFile.setType("application/*");
+            intentShareFile.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://" + path.getAbsolutePath().toString()));
+            System.out.println(path.getPath());
             intentShareFile.putExtra(Intent.EXTRA_SUBJECT, "Unidades calor");
             intentShareFile.putExtra(Intent.EXTRA_TEXT, nombre);
-
+            System.out.println(nombre);
             startActivity(Intent.createChooser(intentShareFile, nombre));
-            Toast.makeText(this, "Simon", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "Simon", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(this, "El archivo no existe", Toast.LENGTH_SHORT).show();
         }
     }
 
-
     public void grabar() {
-        nombre = "/Datos_UC_" + DiaI + "-" + MesI + "-" + AnioI + "_" + DiaF + "-" + MesF + "-" + AnioF + ".csv";
-        File path = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), nombre);
+        nombre = NombreEstacion.replace(" ","_") + "_Datos_UC_" + DiaI + "-" + MesI + "-" + AnioI + "_" + DiaF + "-" + MesF + "-" + AnioF + ".csv";
+        File path = new File(Environment.getExternalStorageDirectory().getAbsolutePath(),  "Consultas_UCD/" + nombre);
 
         try {
             FileOutputStream fos = new FileOutputStream(path);
             fos.write(CSV.getBytes());
             fos.close();
-            Toast.makeText(this, "Archivo guardado", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "Archivo guardado", Toast.LENGTH_SHORT).show();
         } catch (IOException e) {
             e.printStackTrace();
         }

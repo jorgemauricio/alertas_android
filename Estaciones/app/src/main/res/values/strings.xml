@@ -1,3 +1,7 @@
 <resources>
-
+    <string name="FechaI">Fecha inicial</string>
+    <string name="FechaF">Fecha final</string>
+    <string name="btnNuevo">Nuevo</string>
+    <string name="btnCompartir">Compartir</string>
+    <string name="btnCargar">Cargar</string>
 </resources>

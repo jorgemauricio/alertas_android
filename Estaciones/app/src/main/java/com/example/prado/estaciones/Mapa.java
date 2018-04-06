@@ -45,7 +45,6 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
     private LatLng coordenadas;
     private Spinner spiner_EDO;
     private Spinner spiner_MPIO;
-    int carga = 0;
     String Municipio = "";
     int filtro = 0;
 
@@ -70,25 +69,6 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
         spiner_MPIO = (Spinner) findViewById(R.id.spinner_MPIO);
 
 
-        spiner_EDO.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                mMap.clear();
-                if (spiner_EDO.getSelectedItemPosition() != 0) {
-                    filtro = 1;
-                    new JSONTask().execute(URL(spiner_EDO.getSelectedItemPosition()));
-                    edo(spiner_EDO.getSelectedItemPosition());
-                    municipios(spiner_EDO.getSelectedItemPosition());
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-
-        });
 
         spiner_MPIO.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -99,7 +79,7 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
                     filtro = 2;
                     mMap.clear();
                     Municipio = spiner_MPIO.getSelectedItem().toString();
-                    new JSONTask().execute(URL(spiner_EDO.getSelectedItemPosition()));
+                    new JSONTask().execute(URL());
                 }
 
             }
@@ -117,18 +97,22 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
 
         mMap = googleMap;
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-        this.coordenadas = new LatLng(23.634501, -102.55278399999997);
-        CameraUpdate MiUbicacion = CameraUpdateFactory.newLatLngZoom(coordenadas, 4);
-        mMap.animateCamera(MiUbicacion);
 
         String[] inicio = {"Municipios"};
         adaptadorspiners(inicio);
         LlenarSpineredo();
 
+        filtro = 1;
+        new JSONTask().execute(URL());
+        edo();
+        municipios();
+
         mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(Marker marker) {
                 Intent cambio = new Intent(Mapa.this, Informacion_Estacion.class);
+                String Nombre = marker.getTitle();
+                cambio.putExtra("Nombre",Nombre);
                 startActivity(cambio);
             }
         });
@@ -194,22 +178,6 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
                                                     objetofinal.getDouble("latitud"),
                                                     objetofinal.getDouble("longitud")));
                         }
-
-                        //Aguascalientes
-
-                        if (spiner_MPIO.getSelectedItemPosition() != 1 && spiner_MPIO.getSelectedItemPosition() != 0) {
-                            au = spiner_MPIO.getSelectedItemPosition();
-                        } else {
-                            au = 1;
-                        }
-                        if (objetofinal.getInt("municipioid") == au) {
-                            listdatosEstaciones.add(
-                                    new DatosEstaciones
-                                            (objetofinal.getString("Nombre"),
-                                                    objetofinal.getDouble("latitud"),
-                                                    objetofinal.getDouble("longitud")));
-                        }
-
                     }
                     return listdatosEstaciones;
 
@@ -255,273 +223,42 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
         }
     }
 
-    public void edo(int id) {
+    public void edo() {
 
-        if (id == 1) {
-            //Aguascalientes
-            this.coordenadas = new LatLng(21.947102, -102.308799);
-            CameraUpdate MiUbicacion = CameraUpdateFactory.newLatLngZoom(coordenadas, 9);
-            mMap.animateCamera(MiUbicacion);
-
-        } else if (id == 2) {
-            //Baja California
-            this.coordenadas = new LatLng(30.472813, -114.479477);
-            CameraUpdate MiUbicacion = CameraUpdateFactory.newLatLngZoom(coordenadas, 6);
-            mMap.animateCamera(MiUbicacion);
-
-        } else if (id == 3) {
-            //Baja California Sur
-            this.coordenadas = new LatLng(24.082039, -113.101963);
-            CameraUpdate MiUbicacion = CameraUpdateFactory.newLatLngZoom(coordenadas, 6);
-            mMap.animateCamera(MiUbicacion);
-
-        } else if (id == 4) {
-            //Campeche
-            this.coordenadas = new LatLng(19.264958, -90.636586);
-            CameraUpdate MiUbicacion = CameraUpdateFactory.newLatLngZoom(coordenadas, 7);
-            mMap.animateCamera(MiUbicacion);
-
-        } else if (id == 5) {
-            //Coahuila
-            this.coordenadas = new LatLng(27.408257, -101.981846);
-            CameraUpdate MiUbicacion = CameraUpdateFactory.newLatLngZoom(coordenadas, 7);
-            mMap.animateCamera(MiUbicacion);
-
-        } else if (id == 6) {
-            //Colima
-            this.coordenadas = new LatLng(19.140471, -103.924778);
-            CameraUpdate MiUbicacion = CameraUpdateFactory.newLatLngZoom(coordenadas, 9);
-            mMap.animateCamera(MiUbicacion);
-
-        } else if (id == 7) {
-            //Chiapas
-            this.coordenadas = new LatLng(16.468254, -92.522169);
-            CameraUpdate MiUbicacion = CameraUpdateFactory.newLatLngZoom(coordenadas, 7);
-            mMap.animateCamera(MiUbicacion);
-
-        } else if (id == 8) {
             //Chihuahua
             coordenadas = new LatLng(28.847903, -106.534416);
             CameraUpdate MiUbicacion = CameraUpdateFactory.newLatLngZoom(coordenadas, 6);
             mMap.animateCamera(MiUbicacion);
 
-        } else if (id == 9) {
-            //Durango
-            this.coordenadas = new LatLng(24.8007926, -104.789986);
-            CameraUpdate MiUbicacion = CameraUpdateFactory.newLatLngZoom(coordenadas, 7);
-            mMap.animateCamera(MiUbicacion);
 
-        } else if (id == 10) {
-            //Estado de México
-            this.coordenadas = new LatLng(19.499130, -99.715721);
-            CameraUpdate MiUbicacion = CameraUpdateFactory.newLatLngZoom(coordenadas, 8);
-            mMap.animateCamera(MiUbicacion);
-
-        } else if (id == 11) {
-            //Guanajuato
-            this.coordenadas = new LatLng(20.846765, -101.060817);
-            CameraUpdate MiUbicacion = CameraUpdateFactory.newLatLngZoom(coordenadas, 7);
-            mMap.animateCamera(MiUbicacion);
-
-        } else if (id == 12) {
-            //Guerrero
-            this.coordenadas = new LatLng(17.666794, -100.008812);
-            CameraUpdate MiUbicacion = CameraUpdateFactory.newLatLngZoom(coordenadas, 7);
-            mMap.animateCamera(MiUbicacion);
-
-        } else if (id == 13) {
-            //Pendiente hacia abajo
-            //Hidalgo
-            //this.coordenadas = new LatLng(21.947102,-102.308799);
-            CameraUpdate MiUbicacion = CameraUpdateFactory.newLatLngZoom(coordenadas, 9);
-            mMap.animateCamera(MiUbicacion);
-
-        } else if (id == 14) {
-            //this.coordenadas = new LatLng(21.947102,-102.308799);
-            //Jalisco
-            CameraUpdate MiUbicacion = CameraUpdateFactory.newLatLngZoom(coordenadas, 8);
-            mMap.animateCamera(MiUbicacion);
-
-        } else if (id == 15) {
-            //Michoacán
-            //this.coordenadas = new LatLng(21.947102,-102.308799);
-            CameraUpdate MiUbicacion = CameraUpdateFactory.newLatLngZoom(coordenadas, 8);
-            mMap.animateCamera(MiUbicacion);
-
-        } else if (id == 16) {
-            //Morelos
-            //this.coordenadas = new LatLng(21.947102,-102.308799);
-            CameraUpdate MiUbicacion = CameraUpdateFactory.newLatLngZoom(coordenadas, 8);
-            mMap.animateCamera(MiUbicacion);
-
-        } else if (id == 17) {
-            //Nayarit
-            //this.coordenadas = new LatLng(21.947102,-102.308799);
-            CameraUpdate MiUbicacion = CameraUpdateFactory.newLatLngZoom(coordenadas, 8);
-            mMap.animateCamera(MiUbicacion);
-
-        } else if (id == 18) {
-            //Nuevo León
-            //this.coordenadas = new LatLng(21.947102,-102.308799);
-            CameraUpdate MiUbicacion = CameraUpdateFactory.newLatLngZoom(coordenadas, 8);
-            mMap.animateCamera(MiUbicacion);
-
-        } else if (id == 19) {
-            //Oaxaca
-            //this.coordenadas = new LatLng(21.947102,-102.308799);
-            CameraUpdate MiUbicacion = CameraUpdateFactory.newLatLngZoom(coordenadas, 8);
-            mMap.animateCamera(MiUbicacion);
-
-        } else if (id == 20) {
-            //this.coordenadas = new LatLng(21.947102,-102.308799);
-            CameraUpdate MiUbicacion = CameraUpdateFactory.newLatLngZoom(coordenadas, 8);
-            mMap.animateCamera(MiUbicacion);
-
-        } else if (id == 21) {
-            //this.coordenadas = new LatLng(21.947102,-102.308799);
-            CameraUpdate MiUbicacion = CameraUpdateFactory.newLatLngZoom(coordenadas, 8);
-            mMap.animateCamera(MiUbicacion);
-
-        } else if (id == 22) {
-            //this.coordenadas = new LatLng(21.947102,-102.308799);
-            CameraUpdate MiUbicacion = CameraUpdateFactory.newLatLngZoom(coordenadas, 8);
-            mMap.animateCamera(MiUbicacion);
-
-        } else if (id == 23) {
-            //this.coordenadas = new LatLng(21.947102,-102.308799);
-            CameraUpdate MiUbicacion = CameraUpdateFactory.newLatLngZoom(coordenadas, 8);
-            mMap.animateCamera(MiUbicacion);
-
-        } else if (id == 24) {
-            //this.coordenadas = new LatLng(21.947102,-102.308799);
-            CameraUpdate MiUbicacion = CameraUpdateFactory.newLatLngZoom(coordenadas, 8);
-            mMap.animateCamera(MiUbicacion);
-
-        } else if (id == 25) {
-            //this.coordenadas = new LatLng(21.947102,-102.308799);
-            CameraUpdate MiUbicacion = CameraUpdateFactory.newLatLngZoom(coordenadas, 8);
-            mMap.animateCamera(MiUbicacion);
-
-        } else if (id == 26) {
-            //this.coordenadas = new LatLng(21.947102,-102.308799);
-            CameraUpdate MiUbicacion = CameraUpdateFactory.newLatLngZoom(coordenadas, 8);
-            mMap.animateCamera(MiUbicacion);
-
-        } else if (id == 27) {
-            //this.coordenadas = new LatLng(21.947102,-102.308799);
-            CameraUpdate MiUbicacion = CameraUpdateFactory.newLatLngZoom(coordenadas, 8);
-            mMap.animateCamera(MiUbicacion);
-
-        } else if (id == 28) {
-            //this.coordenadas = new LatLng(21.947102,-102.308799);
-            CameraUpdate MiUbicacion = CameraUpdateFactory.newLatLngZoom(coordenadas, 8);
-            mMap.animateCamera(MiUbicacion);
-
-        } else if (id == 29) {
-            //this.coordenadas = new LatLng(21.947102,-102.308799);
-            CameraUpdate MiUbicacion = CameraUpdateFactory.newLatLngZoom(coordenadas, 8);
-            mMap.animateCamera(MiUbicacion);
-
-        } else if (id == 30) {
-            //this.coordenadas = new LatLng(21.947102,-102.308799);
-            CameraUpdate MiUbicacion = CameraUpdateFactory.newLatLngZoom(coordenadas, 8);
-            mMap.animateCamera(MiUbicacion);
-
-        } else if (id == 31) {
-            //this.coordenadas = new LatLng(21.947102,-102.308799);
-            CameraUpdate MiUbicacion = CameraUpdateFactory.newLatLngZoom(coordenadas, 8);
-            mMap.animateCamera(MiUbicacion);
-
-        } else if (id == 32) {
-            //this.coordenadas = new LatLng(21.947102,-102.308799);
-            CameraUpdate MiUbicacion = CameraUpdateFactory.newLatLngZoom(coordenadas, 8);
-            mMap.animateCamera(MiUbicacion);
-        }
     }
 
     protected Marker createMarker(double latitude, double longitude, String title) {
-
         return this.mMap.addMarker(new MarkerOptions()
                 .position(new LatLng(latitude, longitude))
                 .title(title)
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET))
+
         );
     }
 
-    private String URL(int id) {
-        if (id == 1) {
-            return "http://pdiarios.alcohomeapp.com.mx/1.json";
-        }
-        if (id == 8) {
-            return "http://pdiarios.alcohomeapp.com.mx/8.json";
-        }
+    private String URL() {
 
-        return null;
+            return "http://pdiarios.alcohomeapp.com.mx/8.json";
+
     }
 
     private void LlenarSpineredo() {
         String[] Edos = {
-                "Estados",
-                "Aguascalientes",
-                "Baja California",
-                "Baja California Sur",
-                "Campeche",
-                "Coahuila",
-                "Colima",
-                "Chiapas",
-                "Chihuahua",
-                "Durango",
-                "Estado de México",
-                "Guanajuato",
-                "Guerrero",
-                "Hidalgo",
-                "Jalisco",
-                "Michoacán",
-                "Morelos",
-                "Nayarit",
-                "Nuevo León",
-                "Oaxaca",
-                "Puebla",
-                "Querétaro",
-                "Quintana Roo",
-                "San Luis Potosí",
-                "Sinaloa",
-                "Sonora",
-                "Tabasco",
-                "Tamaulipas",
-                "Tlaxcala",
-                "Veracruz",
-                "Yucatán",
-                "Zacatecas",
-                "Distrito Federal"
+                "Chihuahua"
         };
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.item_estilo_spiner_mapa, Edos);
         spiner_EDO.setAdapter(adapter);
     }
 
-    private void municipios(int id) {
+    private void municipios() {
 
-        switch (id) {
-            case 1:
-                String[] municipio1 = {
-                        "Municipios",
-                        "Aguascalientes",
-                        "Asientos",
-                        "Calvillo",
-                        "Cosío",
-                        "El Llano",
-                        "Jesús María",
-                        "Pabellón de Arteaga",
-                        "Rincón de Romos",
-                        "San Francisco de los Romo",
-                        "San José de Gracia",
-                        "Tepezalá"
-                };
-                adaptadorspiners(municipio1);
-                break;
-
-            case 8:
                 String[] municipio8 = {
                         "Municipios",
                         "Ahumada",
@@ -593,9 +330,6 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
                         "Valle de Zaragoz"
                 };
                 adaptadorspiners(municipio8);
-                break;
-        }
-
 
     }
 

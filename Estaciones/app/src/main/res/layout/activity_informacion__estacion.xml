@@ -4,20 +4,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#ffffff"
     tools:context=".Informacion_Estacion">
 
     <TextView
         android:id="@+id/FechaI"
         android:layout_width="140dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="22dp"
         android:layout_marginLeft="4dp"
+        android:layout_marginTop="22dp"
         android:clickable="true"
         android:ems="10"
         android:hint="DD/MM/AAAA"
         android:inputType="date"
         android:onClick="onClick"
         android:selectAllOnFocus="false"
+        android:text="@string/FechaI"
+        android:textColor="#111111"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -26,15 +29,18 @@
         android:id="@+id/FechaF"
         android:layout_width="140dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="22dp"
         android:layout_marginLeft="4dp"
+        android:layout_marginTop="22dp"
         android:clickable="true"
         android:ems="10"
         android:hint="DD/MM/AAAA"
         android:inputType="date"
         android:onClick="onClick"
+        android:text="@string/FechaF"
+        android:textColor="#111111"
         android:textSize="20sp"
         app:layout_constraintStart_toEndOf="@+id/FechaI"
+
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.github.mikephil.charting.charts.LineChart
@@ -51,10 +57,12 @@
         android:id="@+id/BuscarFechas"
         android:layout_width="82dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="20dp"
+        android:layout_marginEnd="26dp"
+        android:layout_marginRight="26dp"
         android:layout_marginTop="4dp"
-        android:text="Cargar"
+        android:background="@drawable/boton_disenio"
+        android:text="@string/btnCargar"
+        android:textColor="#fff"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/FechaF"
         app:layout_constraintTop_toTopOf="parent" />
@@ -66,7 +74,9 @@
         android:layout_marginEnd="16dp"
         android:layout_marginRight="20dp"
         android:layout_marginTop="4dp"
-        android:text="Compartir"
+        android:text="@string/btnCompartir"
+        android:background="@drawable/boton_disenio"
+        android:textColor="#ffffff"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -79,27 +89,12 @@
         android:layout_marginRight="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="4dp"
-        android:text="Nuevo"
+        android:text="@string/btnNuevo"
         app:layout_constraintEnd_toStartOf="@+id/Compartit"
         app:layout_constraintHorizontal_bias="0.869"
         app:layout_constraintStart_toStartOf="parent"
+        android:background="@drawable/boton_disenio"
+        android:textColor="#ffffff"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/FI"
-        android:layout_width="140dp"
-        android:layout_height="20dp"
-        android:layout_marginLeft="4dp"
-        android:text=" Fecha Inicial"
-        android:textSize="16dp"
-        />
-
-    <TextView
-        android:id="@+id/FF"
-        android:layout_width="140dp"
-        android:layout_height="20dp"
-        android:text=" Fecha Final"
-        android:textSize="16dp"
-        app:layout_constraintStart_toEndOf="@+id/FechaI" />
 
 </android.support.constraint.ConstraintLayout>
