@@ -10,7 +10,7 @@
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
-        android:label=""
+        android:label="Alert"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.NoActionBar">
@@ -18,14 +18,14 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/mapskey" />
 
-        <activity android:name=".Inicio"></activity>
-        <activity android:name=".Mapa">
+        <activity android:name=".Inicio">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+            <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>
         </activity>
+        <activity android:name=".Mapa"></activity>
         <activity android:name=".Informacion_Estacion"></activity>
     </application>
 

@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -14,6 +15,7 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdate;
@@ -41,34 +43,47 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
+
+    //Declaración de variables globales.
     private GoogleMap mMap;
+    public TextView anuncio;
     private LatLng coordenadas;
     private Spinner spiner_EDO;
     private Spinner spiner_MPIO;
     String Municipio = "";
     int filtro = 0;
+    private boolean autoriza;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //** Pantalla completa
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        //**
 
         setContentView(R.layout.activity_mapa);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED){
-            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},1000);
-        }
 
         spiner_EDO = (Spinner) findViewById(R.id.spinner_EDO);
         spiner_MPIO = (Spinner) findViewById(R.id.spinner_MPIO);
 
-
+        anuncio = (TextView)findViewById(R.id.advertencia);
+        anuncio.setVisibility(View.INVISIBLE);
+        //** Pide permiso de manipulación de archivos del usuario.
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED){
+            autoriza = false;
+            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},1000);
+        }else {
+            autoriza = true;
+            new JSONTask().execute(URL());
+        }
+        //**
 
         spiner_MPIO.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -90,6 +105,15 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
             }
         });
 
+
+        anuncio.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.M)
+            @Override
+            public void onClick(View v) {
+                requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},1000);
+            }
+        });
+
     }
 
     @Override
@@ -101,12 +125,15 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
         String[] inicio = {"Municipios"};
         adaptadorspiners(inicio);
         LlenarSpineredo();
+        edo();
+
+        if (autoriza) {
+            municipios();
+        }
 
         filtro = 1;
-        new JSONTask().execute(URL());
-        edo();
-        municipios();
 
+        //Extrae el nombre del marcador seleccionado y cambia de activity
         mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(Marker marker) {
@@ -116,12 +143,14 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
                 startActivity(cambio);
             }
         });
-
+        //***
     }
 
+    //Proceso realizado en segundo plano, descarga de servicio web
     public class JSONTask extends AsyncTask<String, String, List<DatosEstaciones>> {
         int au;
 
+        //Obtiene la URL del servicio web.
         @Override
         protected List<DatosEstaciones> doInBackground(String... param) {
 
@@ -138,6 +167,7 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
 
                 String lineas = "";
 
+                //Recorre línea por línea de lo encontrado en la página
                 while ((lineas = reader.readLine()) != null) {
                     buffer.append(lineas);
                 }
@@ -150,7 +180,7 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
                 ArrayList<DatosEstaciones> listdatosEstaciones = new ArrayList<DatosEstaciones>();
 
                 if (filtro == 1) {
-
+                    //Ciclo que obtiene los parametros deseados y llena una lista con ellos
                     for (int i = 0; i < jsonArray.length(); i++) {
                         objetofinal = jsonArray.getJSONObject(i);
                         listdatosEstaciones.add(
@@ -180,7 +210,7 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
                         }
                     }
                     return listdatosEstaciones;
-
+                    ///////////////////*******
                 }
 
             } catch (MalformedURLException e) {
@@ -237,7 +267,7 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
         return this.mMap.addMarker(new MarkerOptions()
                 .position(new LatLng(latitude, longitude))
                 .title(title)
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET))
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
 
         );
     }
@@ -343,10 +373,16 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
         switch (codigopermiso){
             case 1000:
                 if (respuestaPermiso[0] == PackageManager.PERMISSION_GRANTED){
-
+                    anuncio.setVisibility(View.INVISIBLE);
+                    autoriza = true;
+                    municipios();
+                    new JSONTask().execute(URL());
                 }else{
-
+                    anuncio.setVisibility(View.VISIBLE);
+                    autoriza = false;
+                    Toast.makeText(this, "Se requiere permiso para mostrar información", Toast.LENGTH_SHORT).show();
                 }
+                break;
         }
     }
 }

@@ -326,7 +326,9 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
     }
 
     public void grabar() {
-        nombre = NombreEstacion.replace(" ","_") + "_Datos_UC_" + DiaI + "-" + MesI + "-" + AnioI + "_" + DiaF + "-" + MesF + "-" + AnioF + ".csv";
+        NombreEstacion = NombreEstacion.replace(" ","_");
+        NombreEstacion = NombreEstacion.replace("\"","");
+        nombre = NombreEstacion + "_Datos_UC_" + DiaI + "-" + MesI + "-" + AnioI + "_" + DiaF + "-" + MesF + "-" + AnioF + ".csv";
         File path = new File(Environment.getExternalStorageDirectory().getAbsolutePath(),  "Consultas_UCD/" + nombre);
 
         try {
