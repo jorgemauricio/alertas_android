@@ -28,8 +28,8 @@ public class Inicio extends AppCompatActivity{
 
         Portada = (ImageView)findViewById(R.id.portada);
         final AlphaAnimation alphaAnimation = new AlphaAnimation(1.0f,0.0f);
-        alphaAnimation.setDuration(1000);
-        alphaAnimation.setStartOffset(1000);
+        alphaAnimation.setDuration(600);
+        alphaAnimation.setStartOffset(3000);
         alphaAnimation.setFillAfter(true);
 
         alphaAnimation.setAnimationListener(new Animation.AnimationListener() {

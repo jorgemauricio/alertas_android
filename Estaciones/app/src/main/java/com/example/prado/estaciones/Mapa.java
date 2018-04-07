@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -53,7 +54,7 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
     String Municipio = "";
     int filtro = 0;
     private boolean autoriza;
-
+    private long tiempoPrimerClick;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -263,6 +264,7 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
 
     }
 
+
     protected Marker createMarker(double latitude, double longitude, String title) {
         return this.mMap.addMarker(new MarkerOptions()
                 .position(new LatLng(latitude, longitude))
@@ -272,11 +274,13 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
         );
     }
 
+
     private String URL() {
 
             return "http://pdiarios.alcohomeapp.com.mx/8.json";
 
     }
+
 
     private void LlenarSpineredo() {
         String[] Edos = {
@@ -286,6 +290,7 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.item_estilo_spiner_mapa, Edos);
         spiner_EDO.setAdapter(adapter);
     }
+
 
     private void municipios() {
 
@@ -363,11 +368,13 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
 
     }
 
+    //Método para cargar la cadena de información a los objetos spinner
     private void adaptadorspiners(String[] vector) {
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.item_estilo_spiner_mapa, vector);
         spiner_MPIO.setAdapter(adapter);
     }
 
+    //Método para comparar la respuesta al permiso solicitado
     @Override
     public void onRequestPermissionsResult(int codigopermiso, @NonNull String[] permiso, @NonNull int[] respuestaPermiso){
         switch (codigopermiso){
@@ -385,5 +392,21 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
                 break;
         }
     }
+
+    //Método para salir de la aplicación precionando dos veces atras
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    @Override
+    public void onBackPressed(){
+        if (tiempoPrimerClick + 2000 > System.currentTimeMillis()){
+            super.onBackPressed();
+            finishAffinity();
+            return;
+        }else {
+            Toast.makeText(this, "Vuelve a presionar para salir", Toast.LENGTH_SHORT).show();
+        }
+        tiempoPrimerClick = System.currentTimeMillis();
+        System.out.println(tiempoPrimerClick);
+    }
+
 }
 

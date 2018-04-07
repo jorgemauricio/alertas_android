@@ -71,8 +71,6 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
     private ArrayList<ILineDataSet> lineDataSets = new ArrayList<>();
     ArrayList<UnidadesCalor> listUC = new ArrayList<UnidadesCalor>();
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,7 +99,6 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
         path.mkdir();
       }
 
-
     DatePickerDialog.OnDateSetListener dI = new DatePickerDialog.OnDateSetListener() {
 
         @Override
@@ -116,9 +113,9 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
                 FechaI.setText(dayOfMonth + "/" + (month + 1) + "/" + year);
                 FechaF.requestFocus();
             }
-
         }
     };
+
     DatePickerDialog.OnDateSetListener dF = new DatePickerDialog.OnDateSetListener() {
         @Override
         public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
