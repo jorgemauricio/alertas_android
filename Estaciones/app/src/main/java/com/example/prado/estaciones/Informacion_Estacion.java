@@ -105,7 +105,7 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
         public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
             if (dayOfMonth >= calendar.get(Calendar.DAY_OF_MONTH) && month >= calendar.get(Calendar.MONTH) && year >= calendar.get(Calendar.YEAR)) {
                 Toast.makeText(Informacion_Estacion.this, "Aun no existe información", Toast.LENGTH_SHORT).show();
-                FechaI.setText("");
+                FechaI.setText("Fecha inicial");
             } else {
                 DiaI = dayOfMonth;
                 MesI = (month + 1);
@@ -121,7 +121,7 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
         public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
             if (dayOfMonth >= calendar.get(Calendar.DAY_OF_MONTH) && month >= calendar.get(Calendar.MONTH) && year >= calendar.get(Calendar.YEAR)) {
                 Toast.makeText(Informacion_Estacion.this, "Aún no existe información", Toast.LENGTH_SHORT).show();
-                FechaF.setText("");
+                FechaF.setText("Fecha final");
             } else {
                 DiaF = dayOfMonth;
                 MesF = (month + 1);
@@ -146,8 +146,8 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
 
         }
         if (v == Cargar) {
-            if (!FechaI.getText().toString().equals("")) {
-                if (!FechaF.getText().toString().equals("")) {
+            if (!FechaI.getText().toString().equals("Fecha inicial")) {
+                if (!FechaF.getText().toString().equals("Fecha final")) {
                     if (AnioF < AnioI) {
                         Toast.makeText(Informacion_Estacion.this, "La fecha final no puede ser mas antigua que la inicial", Toast.LENGTH_LONG).show();
                     } else if (MesF < MesI & AnioF <= AnioI) {
@@ -338,4 +338,5 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
         }
 
     }
+
 }

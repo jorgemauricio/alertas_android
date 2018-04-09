@@ -264,7 +264,6 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
 
     }
 
-
     protected Marker createMarker(double latitude, double longitude, String title) {
         return this.mMap.addMarker(new MarkerOptions()
                 .position(new LatLng(latitude, longitude))
@@ -274,13 +273,11 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
         );
     }
 
-
     private String URL() {
 
             return "http://pdiarios.alcohomeapp.com.mx/8.json";
 
     }
-
 
     private void LlenarSpineredo() {
         String[] Edos = {
@@ -290,7 +287,6 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.item_estilo_spiner_mapa, Edos);
         spiner_EDO.setAdapter(adapter);
     }
-
 
     private void municipios() {
 
@@ -409,4 +405,3 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
     }
 
 }
-

@@ -15,11 +15,9 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 
-
 public class Inicio extends AppCompatActivity{
 
     private ImageView Portada;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,4 +53,3 @@ public class Inicio extends AppCompatActivity{
 
             }
         }
-
