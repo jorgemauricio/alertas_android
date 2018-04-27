@@ -9,11 +9,14 @@ public class DatosEstaciones {
     String Nombre;
     double latitud;
     double longitud;
+    int ID;
 
-    public DatosEstaciones(String Nombre, double latitud, double longitud) {
+
+    public DatosEstaciones(String Nombre, double latitud, double longitud, int ID) {
         this.Nombre = Nombre;
         this.latitud = latitud;
         this.longitud = longitud;
+        this.ID = ID;
     }
 
     public String getNombre() {
@@ -42,6 +45,14 @@ public class DatosEstaciones {
 
     public void setLongitud(double longitud) {
         this.longitud = longitud;
+    }
+
+    public int getID() {
+        return ID;
+    }
+
+    public void setID(int ID) {
+        this.ID = ID;
     }
 
 }

@@ -10,7 +10,7 @@
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@mipmap/portada"
+        android:src="@mipmap/portada_alertas"
         android:id="@+id/portada"/>
 
 </android.support.constraint.ConstraintLayout>

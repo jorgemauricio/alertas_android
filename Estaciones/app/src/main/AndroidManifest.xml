@@ -6,12 +6,12 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_CONTACTS"/>
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/alertas_chi"
+        android:icon="@mipmap/icono_alertas"
         android:label="Alert"
-        android:roundIcon="@mipmap/alertas_chi"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.NoActionBar">
         <meta-data

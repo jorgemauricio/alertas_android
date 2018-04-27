@@ -56,5 +56,14 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:layout_editor_absoluteX="0dp" />
 
+    <ImageButton
+        android:id="@+id/Actualizar"
+        android:layout_width="45dp"
+        android:layout_height="35dp"
+        android:background="@color/colorPrimary"
+        android:src="@android:drawable/ic_popup_sync"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/spinner_EDO" />
+
 
 </android.support.constraint.ConstraintLayout>

@@ -1,8 +1,11 @@
 package com.example.prado.estaciones;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -15,6 +18,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -51,10 +55,16 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
     private LatLng coordenadas;
     private Spinner spiner_EDO;
     private Spinner spiner_MPIO;
+    private ImageButton actualizar;
     String Municipio = "";
     int filtro = 0;
     private boolean autoriza;
     private long tiempoPrimerClick;
+    private ArrayList NumerosEstacion = new ArrayList();
+    ConnectivityManager cm;
+    NetworkInfo ni;
+    boolean WiFI = false;
+    boolean MoviL = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,19 +82,10 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
 
         spiner_EDO = (Spinner) findViewById(R.id.spinner_EDO);
         spiner_MPIO = (Spinner) findViewById(R.id.spinner_MPIO);
-
+        actualizar = (ImageButton) findViewById(R.id.Actualizar);
         anuncio = (TextView)findViewById(R.id.advertencia);
         anuncio.setVisibility(View.INVISIBLE);
-        //** Pide permiso de manipulación de archivos del usuario.
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED){
-            autoriza = false;
-            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},1000);
-        }else {
-            autoriza = true;
-            new JSONTask().execute(URL());
-        }
-        //**
+
 
         spiner_MPIO.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -95,7 +96,9 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
                     filtro = 2;
                     mMap.clear();
                     Municipio = spiner_MPIO.getSelectedItem().toString();
-                    new JSONTask().execute(URL());
+                    if (WiFI != false || MoviL != false) {
+                        new JSONTask().execute(URL());
+                    }
                 }
 
             }
@@ -112,6 +115,27 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
             @Override
             public void onClick(View v) {
                 requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},1000);
+            }
+        });
+
+
+
+
+
+        //** Pide permiso de manipulación de archivos del usuario.
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED){
+            autoriza = false;
+            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},1000);
+        }else {
+            autoriza = true;
+            conexion();
+        }
+        //**
+        actualizar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+conexion();
             }
         });
 
@@ -141,6 +165,7 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
                 Intent cambio = new Intent(Mapa.this, Informacion_Estacion.class);
                 String Nombre = marker.getTitle();
                 cambio.putExtra("Nombre",Nombre);
+                cambio.putExtra("Nestacion" , marker.getSnippet());
                 startActivity(cambio);
             }
         });
@@ -188,7 +213,8 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
                                 new DatosEstaciones
                                         (objetofinal.getString("Nombre"),
                                                 objetofinal.getDouble("latitud"),
-                                                objetofinal.getDouble("longitud")));
+                                                objetofinal.getDouble("longitud"),
+                                                objetofinal.getInt("Numero")));
                     }
                     return listdatosEstaciones;
 
@@ -207,7 +233,8 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
                                     new DatosEstaciones
                                             (objetofinal.getString("Nombre"),
                                                     objetofinal.getDouble("latitud"),
-                                                    objetofinal.getDouble("longitud")));
+                                                    objetofinal.getDouble("longitud"),
+                                                    objetofinal.getInt("Numero")));
                         }
                     }
                     return listdatosEstaciones;
@@ -235,7 +262,7 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
                     Toast.makeText(Mapa.this, "Carga completada existen " + result.size() + " estaciones en " + spiner_EDO.getSelectedItem().toString(), Toast.LENGTH_LONG).show();
                     if (!result.isEmpty()) {
                         for (int i = 0; i < result.size(); i++) {
-                            createMarker(result.get(i).getLatitud(), result.get(i).getLongitud(), result.get(i).getNombre());
+                            createMarker(result.get(i).getLatitud(), result.get(i).getLongitud(), result.get(i).getNombre(),String.valueOf(result.get(i).getID()));
                         }
 
                     }
@@ -244,12 +271,12 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
                     Toast.makeText(Mapa.this, "Carga completada existen " + result.size() + " estaciones en " + spiner_MPIO.getSelectedItem().toString(), Toast.LENGTH_LONG).show();
                     if (!result.isEmpty()) {
                         for (int i = 0; i < result.size(); i++) {
-                            createMarker(result.get(i).getLatitud(), result.get(i).getLongitud(), result.get(i).getNombre());
+                            createMarker(result.get(i).getLatitud(), result.get(i).getLongitud(), result.get(i).getNombre(),String.valueOf(result.get(i).getID()));
                         }
                     }
                 }
             } else {
-                Toast.makeText(Mapa.this, "El servicio web no esta disponible", Toast.LENGTH_LONG).show();
+                //Toast.makeText(Mapa.this, "", Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -264,14 +291,17 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
 
     }
 
-    protected Marker createMarker(double latitude, double longitude, String title) {
+    protected Marker createMarker(double latitude, double longitude, String title,String NEstacion) {
         return this.mMap.addMarker(new MarkerOptions()
                 .position(new LatLng(latitude, longitude))
                 .title(title)
+                .snippet(NEstacion)
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
 
         );
+
     }
+
 
     private String URL() {
 
@@ -404,4 +434,37 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
         System.out.println(tiempoPrimerClick);
     }
 
+    private void actualizar(){
+        new JSONTask().execute(URL());
+    }
+    //Comprueba que tipo de conexión a red utiliza
+    private void conexion(){
+        cm = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+        ni = cm.getActiveNetworkInfo();
+        if (ni != null) {
+            ConnectivityManager connManager1 = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo Wifi = connManager1.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+
+            ConnectivityManager connManager2 = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo Mobile = connManager2.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+
+            if (Wifi.isConnected()) {
+                WiFI = true;
+                Toast.makeText(this, "Conectado a red WIFI", Toast.LENGTH_SHORT).show();
+            }
+            if (Mobile.isConnected()) {
+                MoviL = true;
+                Toast.makeText(this, "Conectado a red Móvil", Toast.LENGTH_SHORT).show();            }
+
+            if (WiFI != false || MoviL != false){
+                new JSONTask().execute(URL());
+
+            }
+
+        }
+        else {
+            /* No estas conectado a internet */
+            Toast.makeText(this, "No tienes conexión a internet", Toast.LENGTH_SHORT).show();
+        }
+    }
 }
