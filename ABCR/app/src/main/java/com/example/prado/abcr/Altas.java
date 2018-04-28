@@ -13,6 +13,7 @@ import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -245,11 +246,11 @@ public class Altas extends AppCompatActivity implements View.OnClickListener{
         }
 
         path = Environment.getExternalStorageDirectory() + File.separator + Ruta_Imagen + File.separator + nombreImagen;
-
-        File imagen = new File(path);
-
+        Uri pathUri = FileProvider.getUriForFile(this,"com.example.prado.abcr", new File(path));
+        System.out.println(pathUri);
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(imagen));
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, pathUri);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             startActivityForResult(Intent.createChooser(intent, "Tomar foto"), REQUEST_CAMERA);
 
     }

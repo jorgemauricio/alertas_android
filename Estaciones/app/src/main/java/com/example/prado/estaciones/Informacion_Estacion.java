@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -77,6 +78,8 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
     private ArrayList<ILineDataSet> lineDataSets = new ArrayList<>();
     ArrayList<UnidadesCalor> listUC = new ArrayList<UnidadesCalor>();
     private String Nestacion;
+    private final String Carpeta = "UnidadesCalor/", Ruta_Imagen =Carpeta+"UC";
+
 
 
     @Override
@@ -104,8 +107,7 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
 
         NombreEstacion = getIntent().getStringExtra("Nombre");
         Nestacion = getIntent().getStringExtra("Nestacion");
-        File path = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "Consultas_UCD");
-        path.mkdir();
+
       }
 
     DatePickerDialog.OnDateSetListener dI = new DatePickerDialog.OnDateSetListener() {
@@ -346,20 +348,24 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
     }
 
     private void Compartir() {
+        NombreEstacion = NombreEstacion.replace(" ","_");
+        String NombreArchivo = NombreEstacion + "_Datos_UC_" + DiaI + "-" + MesI + "-" + AnioI + "_" + DiaF + "-" + MesF + "-" + AnioF + ".csv";
+        String path = Environment.getExternalStorageDirectory() + File.separator + Ruta_Imagen + File.separator + NombreArchivo;
 
-        File path = new File(Environment.getExternalStorageDirectory().getAbsolutePath(),"/" + "Consultas_UCD/" + nombre);
-
-
-        File fileWithinMyDir = new File(path.getPath());
-
+        File fileWithinMyDir = new File(path);
+        System.out.println(fileWithinMyDir);
+        Uri dir = FileProvider.getUriForFile(this,"com.example.prado.estaciones",new File(path));
+        System.out.println(dir);
         if (fileWithinMyDir.exists()) {
-            Intent intentShareFile = new Intent(Intent.ACTION_SEND);
-            intentShareFile.setType("application/*");
-            intentShareFile.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://" + path.getAbsolutePath().toString()));
-            System.out.println(path.getPath());
+
+            Intent intentShareFile = new Intent();
+            intentShareFile.setAction(Intent.ACTION_SEND);
+            intentShareFile.putExtra(Intent.EXTRA_STREAM, dir);
             intentShareFile.putExtra(Intent.EXTRA_SUBJECT, "Unidades calor");
-            intentShareFile.putExtra(Intent.EXTRA_TEXT, nombre);
-            System.out.println(nombre);
+            intentShareFile.putExtra(Intent.EXTRA_TEXT, NombreArchivo);
+            intentShareFile.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            intentShareFile.setType("application/*");
+            System.out.println(NombreArchivo);
             startActivity(Intent.createChooser(intentShareFile, nombre));
             //Toast.makeText(this, "Simon", Toast.LENGTH_SHORT).show();
         } else {
@@ -368,13 +374,23 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
     }
 
     public void grabar() {
-        NombreEstacion = NombreEstacion.replace(" ","_");
-        NombreEstacion = NombreEstacion.replace("\"","");
-        nombre = NombreEstacion + "_Datos_UC_" + DiaI + "-" + MesI + "-" + AnioI + "_" + DiaF + "-" + MesF + "-" + AnioF + ".csv";
-        File path = new File(Environment.getExternalStorageDirectory().getAbsolutePath(),  "Consultas_UCD/" + nombre);
+        File carpeta = new File (Environment.getExternalStorageDirectory(), Ruta_Imagen);
+        boolean existe = carpeta.exists();
+        String NombreArchivo = "";
+        if (existe == false){
+            existe = carpeta.mkdirs();
+        }
+        if(existe){
+            NombreEstacion = NombreEstacion.replace(" ","_");
+            NombreArchivo = NombreEstacion + "_Datos_UC_" + DiaI + "-" + MesI + "-" + AnioI + "_" + DiaF + "-" + MesF + "-" + AnioF + ".csv";
+        }
 
+
+        String path = Environment.getExternalStorageDirectory() + File.separator + Ruta_Imagen + File.separator + NombreArchivo;
+
+        File ruta = new File(path);
         try {
-            FileOutputStream fos = new FileOutputStream(path);
+            FileOutputStream fos = new FileOutputStream(ruta);
             fos.write(CSV.getBytes());
             fos.close();
             //Toast.makeText(this, "Archivo guardado", Toast.LENGTH_SHORT).show();
