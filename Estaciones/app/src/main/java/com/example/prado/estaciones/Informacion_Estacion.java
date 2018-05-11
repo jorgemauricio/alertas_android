@@ -1,21 +1,17 @@
 package com.example.prado.estaciones;
 
-import android.Manifest;
-import android.app.Activity;
 import android.app.DatePickerDialog;
-import android.content.Context;
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -32,8 +28,9 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
+import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
-import com.google.android.gms.ads.internal.gmsg.HttpClient;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -41,19 +38,14 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 public class Informacion_Estacion extends AppCompatActivity implements View.OnClickListener {
@@ -62,14 +54,15 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
     private LineChart lineChart;
     boolean validar = true;
     private Button Cargar, Compartir, Nuevo;
-    private TextView FechaI, FechaF, EFechaI, EFechaF;
+    private TextView FechaI, FechaF;
     final Calendar calendar = Calendar.getInstance();
     LineDataSet lineDataSet;
     LineData datos;
     private int DiaI, MesI, AnioI, DiaF, MesF, AnioF;
     private String CSV = "Fecha,Tmax,Tmin,UCD,UCA\n";
     double UC = 0;
-    String nombre,NombreEstacion;
+    private float posX = 0, posY = 0;
+    private String nombre,NombreEstacion;
     private ArrayList<String> DatosEnEjeX = new ArrayList<>();
     private ArrayList<Entry> DatosEnEjeY = new ArrayList<>();
     private ArrayList<Entry> AcumuladoEnEjeY = new ArrayList<>();
@@ -79,6 +72,9 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
     ArrayList<UnidadesCalor> listUC = new ArrayList<UnidadesCalor>();
     private String Nestacion;
     private final String Carpeta = "UnidadesCalor/", Ruta_Imagen =Carpeta+"UC";
+    private Dialog dialog;
+    private String fecpop;
+    private int UCApop;
 
 
 
@@ -104,9 +100,54 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
         FechaI.setOnClickListener(this);
         FechaF.setOnClickListener(this);
         lineChart.setNoDataText("Sin datos para mostrar");
+        dialog = new Dialog(this);
+
 
         NombreEstacion = getIntent().getStringExtra("Nombre");
         Nestacion = getIntent().getStringExtra("Nestacion");
+
+        lineChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener()
+        {
+            @Override
+            public void onValueSelected(Entry e, Highlight h)
+            {
+                TextView cerrar,nom_est,UCA,fec,Fase,Alerta;
+                float x=e.getX();
+                float y=e.getY();
+                if (x == posX && y == posY) {
+                    dialog.setContentView(R.layout.alerta_view);
+
+                    Alerta = (TextView) dialog.findViewById(R.id.Alerta);
+                    nom_est = (TextView) dialog.findViewById(R.id.Nom_estacion);
+                    UCA = (TextView) dialog.findViewById(R.id.UCA);
+                    fec = (TextView) dialog.findViewById(R.id.Fecha);
+                    Fase = (TextView) dialog.findViewById(R.id.Fase);
+                    cerrar = (TextView) dialog.findViewById(R.id.cerrar);
+
+                    Alerta.setText("Alerta");
+                    nom_est.setText("Estación: " + NombreEstacion.replace("_"," "));
+                    fec.setText("Fecha: " + fecpop);
+                    UCA.setText("Unidades calor acumuladas: " + String.valueOf(UCApop) + " UC");
+                    Fase.setText("Fase: Pupa");
+
+                    cerrar.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            dialog.dismiss();
+                        }
+                    });
+
+
+                    dialog.show();
+                }
+            }
+
+            @Override
+            public void onNothingSelected()
+            {
+
+            }
+        });
 
       }
 
@@ -168,8 +209,11 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
                     } else {
                         //new JSONTaskUC().execute("http://pdiarios.alcohomeapp.com.mx/860138.json");
                         String URL ="http://clima.inifap.gob.mx/wapi/api/Datos?idEstado=8&IdEstacion=" + Nestacion + "&fch1="+ FechaI.getText().toString() +"&fch2="+FechaF.getText().toString();
-                        System.out.println(URL);
-                        new JSONTaskUC().execute(URL);
+                        ProgressDialog progressDialog = new ProgressDialog(this);
+                        progressDialog.setIndeterminate(true);
+                        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                        progressDialog.setMessage("Descargando información...");
+                        new JSONTaskUC(progressDialog).execute(URL);
                         OcultarP();
                     }
                 } else {
@@ -190,10 +234,23 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
     }
 
     public class JSONTaskUC extends AsyncTask<String, String, List<UnidadesCalor>> {
+        ProgressDialog progressDialog;
+        JSONTaskUC(ProgressDialog progressDialog){
+            this.progressDialog = progressDialog;
+        }
+
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog.show();
+        }
+
 
         @Override
         protected List<UnidadesCalor> doInBackground(String... param) {
             HttpURLConnection urlConnection = null;
+
             try {
                 URL url = new URL(param[0]);
                 urlConnection = (HttpURLConnection) url.openConnection();
@@ -231,7 +288,6 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
                                                 objetofinal.getDouble("Tmin")));
                         System.out.println(objetofinal.getString("FechaParseo"));
                     }
-
                     return listUC;
                 }
 
@@ -243,6 +299,7 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
             return null;
         }
 
+
         @Override
         protected void onPostExecute(List<UnidadesCalor> result) {
             super.onPostExecute(result);
@@ -250,11 +307,17 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
                 double acomulado = 0;
                 for (int i = 0; i < result.size(); i++) {
                     acomulado += UnidadesCalor(result.get(i).getTmax(), result.get(i).getTmin());
-                    DatosEnEjeY.add(new Entry(i+1, (float) UnidadesCalor(result.get(i).getTmax(), result.get(i).getTmin())));
-                    AcumuladoEnEjeY.add(new Entry(i + 1, (float) acomulado));
+                    DatosEnEjeY.add(new Entry(i, (float) UnidadesCalor(result.get(i).getTmax(), result.get(i).getTmin())));
+                    AcumuladoEnEjeY.add(new Entry(i , (float) acomulado));
                     valoresX.add(result.get(i).getFecha());
                     if(acomulado >= 1019 && validar) {
-                        AcumuladoEnEjeYAlerta.add(new Entry(i + 1, (float) acomulado));
+                        AcumuladoEnEjeYAlerta.add(new Entry(i, (float) acomulado));
+                        posX = AcumuladoEnEjeYAlerta.get(0).getX();
+                        System.out.println("Posición en X: " + posX);
+                        posY = AcumuladoEnEjeYAlerta.get(0).getY();
+                        System.out.println("Posición en Y: " + posY);
+                        fecpop = result.get(i).getFecha();
+                        UCApop = (int) acomulado;
                         validar = false;
                     }
                     CSV += result.get(i).getFecha() + "," + result.get(i).getTmax() + "," + result.get(i).getTmin() + "," + UnidadesCalor(result.get(i).getTmax(), result.get(i).getTmin()) +","+ acomulado +"\n";
@@ -287,7 +350,7 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
                 if(validar == false) {
                     lineDataSetAcomuladoAlerta.setDrawCircles(true);
                     lineDataSetAcomuladoAlerta.setCircleColor(Color.rgb(254, 0, 0));
-                    lineDataSetAcomuladoAlerta.setCircleRadius(5f);
+                    lineDataSetAcomuladoAlerta.setCircleRadius(8f);
                     lineDataSetAcomuladoAlerta.setDrawCircleHole(false);
                     lineDataSetAcomuladoAlerta.setLineWidth(0f);
                     lineDataSetAcomuladoAlerta.setColor(Color.rgb(254, 93, 64));
@@ -315,8 +378,11 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
                 lineChart.getXAxis().setGranularity(1f);
                 lineChart.getXAxis().setDrawAxisLine(true);
                 lineChart.getXAxis().setValueFormatter(new IndexAxisValueFormatter(valoresX));
+                progressDialog.dismiss();
 
+                lineChart.isSaveEnabled();
                 lineChart.invalidate();
+
             } else {
                 Toast.makeText(Informacion_Estacion.this, "No existe información", Toast.LENGTH_SHORT).show();
                 finish();
@@ -351,21 +417,24 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
         NombreEstacion = NombreEstacion.replace(" ","_");
         String NombreArchivo = NombreEstacion + "_Datos_UC_" + DiaI + "-" + MesI + "-" + AnioI + "_" + DiaF + "-" + MesF + "-" + AnioF + ".csv";
         String path = Environment.getExternalStorageDirectory() + File.separator + Ruta_Imagen + File.separator + NombreArchivo;
+        String pathG = Environment.getExternalStorageDirectory() + File.separator + Carpeta + File.separator + "Grafica_prueba.png";
+        ArrayList<Uri> archivosCarga = new ArrayList<Uri>();
 
         File fileWithinMyDir = new File(path);
         System.out.println(fileWithinMyDir);
-        Uri dir = FileProvider.getUriForFile(this,"com.example.prado.estaciones",new File(path));
-        System.out.println(dir);
+
+        archivosCarga.add(FileProvider.getUriForFile(this,"com.example.prado.estaciones",new File(path)));
+        archivosCarga.add(FileProvider.getUriForFile(this,"com.example.prado.estaciones",new File(pathG)));
+
         if (fileWithinMyDir.exists()) {
 
             Intent intentShareFile = new Intent();
-            intentShareFile.setAction(Intent.ACTION_SEND);
-            intentShareFile.putExtra(Intent.EXTRA_STREAM, dir);
-            intentShareFile.putExtra(Intent.EXTRA_SUBJECT, "Unidades calor");
-            intentShareFile.putExtra(Intent.EXTRA_TEXT, NombreArchivo);
+            intentShareFile.setAction(Intent.ACTION_SEND_MULTIPLE);
+            intentShareFile.putParcelableArrayListExtra(Intent.EXTRA_STREAM,archivosCarga);
+            intentShareFile.putExtra(Intent.EXTRA_SUBJECT, "Información de unidades calor");
             intentShareFile.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            intentShareFile.putExtra(Intent.EXTRA_TEXT, "Gráfica y .csv");
             intentShareFile.setType("application/*");
-            System.out.println(NombreArchivo);
             startActivity(Intent.createChooser(intentShareFile, nombre));
             //Toast.makeText(this, "Simon", Toast.LENGTH_SHORT).show();
         } else {
@@ -392,12 +461,16 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
         try {
             FileOutputStream fos = new FileOutputStream(ruta);
             fos.write(CSV.getBytes());
+            //fos.write(ALERTA.getBytes());
             fos.close();
+            lineChart.saveToPath("Grafica_prueba", File.separator + Carpeta);
+            System.out.println(Carpeta);
             //Toast.makeText(this, "Archivo guardado", Toast.LENGTH_SHORT).show();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
     }
+
 
 }

@@ -3,12 +3,14 @@ package com.example.prado.abcr;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Environment;
@@ -31,15 +33,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Calendar;
 
 public class Altas extends AppCompatActivity implements View.OnClickListener{
 
+    private int ancho = 320, alto = 410;
     private Toolbar toolbar;
     private ImageButton Cam_Camara;
-    private ImageView img_foto;
     private EditText edt_RFC, edt_Nombre, edt_Ape_Pat, edt_Ape_Mat, edt_Correo, edt_Direccion,edt_Telefono,edt_Fech_Nac;
     private Spinner spn_Edo_Civil,spn_Sexo;
     final Calendar calendar = Calendar.getInstance();
@@ -71,8 +74,6 @@ public class Altas extends AppCompatActivity implements View.OnClickListener{
         edt_Telefono = (EditText) findViewById(R.id.telefono);
         spn_Edo_Civil = (Spinner) findViewById(R.id.edo_civil);
         spn_Sexo = (Spinner) findViewById(R.id.sexo);
-        img_foto = (ImageView) findViewById(R.id.Fotografia);
-        img_foto.setOnClickListener(this);
 
 
 
@@ -171,19 +172,13 @@ public class Altas extends AppCompatActivity implements View.OnClickListener{
     public void onClick(View v) {
         if(v == edt_Fech_Nac){
             new DatePickerDialog(this, dI, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
-        }else if (v == Cam_Camara){
-            abrirCamara();
-        }else if (v == img_foto){
-            Intent intent = new Intent(Intent.ACTION_PICK);
-            intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                    MediaStore.Images.Media.CONTENT_TYPE);
-            startActivityForResult(intent, REQUEST_SELECT_PHOTO);
+        }else if (v == Cam_Camara) {
+            Opciones();
         }
-
     }
 
 
-    /*public void Opciones(){
+    public void Opciones(){
         final CharSequence [] opciones = {"Tomar foto", "Elegir de galería", "Cancelar"};
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Elige una opción");
@@ -192,24 +187,29 @@ public class Altas extends AppCompatActivity implements View.OnClickListener{
             public void onClick(DialogInterface dialog, int which) {
 
                 if (opciones[which].equals("Tomar foto")) {
-
+                    abrirCamara();
                 } else if (opciones[which].equals("Elegir de galería")) {
-
-
+                    Intent intent = new Intent(Intent.ACTION_PICK);
+                    intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                            MediaStore.Images.Media.CONTENT_TYPE);
+                    startActivityForResult(intent, REQUEST_SELECT_PHOTO);
                 }
             }
         });
         builder.show();
-
     }
-*/
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
         if (resultCode == RESULT_OK){
            if (requestCode == REQUEST_SELECT_PHOTO) {
                Uri pat = data.getData();
-               img_foto.setImageURI(pat);
+
+               Bitmap myBitmap =
+                       BitmapFactory.decodeFile(path);
+               Cam_Camara.setImageURI(pat);
            }
            if (requestCode == REQUEST_CAMERA){
                MediaScannerConnection.scanFile(this, new String[]{path}, null, new MediaScannerConnection.MediaScannerConnectionClient() {
@@ -226,7 +226,8 @@ public class Altas extends AppCompatActivity implements View.OnClickListener{
 
                Bitmap myBitmap =
                        BitmapFactory.decodeFile(path);
-               img_foto.setImageBitmap(myBitmap);
+
+               Cam_Camara.setImageBitmap(redimensionarImagenMaximo(myBitmap,ancho,alto));
 
            }
         }
@@ -255,4 +256,18 @@ public class Altas extends AppCompatActivity implements View.OnClickListener{
 
     }
 
+    public Bitmap redimensionarImagenMaximo(Bitmap mBitmap, float newWidth, float newHeigth){
+        //Redimensionamos
+        int width = mBitmap.getWidth();
+        int height = mBitmap.getHeight();
+        float scaleWidth = ((float) newWidth) / width;
+        float scaleHeight = ((float) newHeigth) / height;
+        // create a matrix for the manipulation
+        Matrix matrix = new Matrix();
+        // resize the bit map
+        matrix.postScale(scaleWidth, scaleHeight);
+        // recreate the new Bitmap
+        return Bitmap.createBitmap(mBitmap, 0, 0, width, height, matrix, false);
+
+    }
     }

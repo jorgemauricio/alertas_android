@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Permisos</string>
+    <string name="Camara">Cámara</string>
+    <string name="Internet">Internet</string>
+    <string name="Almacenamiento">Almacenamiento</string>
+    <string name="Contactos">Contactos</string>
+    <string name="Ubicacione">Ubicación</string>
+    <string name="Microfono">Micrófono</string>
+    <string name="Telefono">Teléfono</string>
+    <string name="Sensor">Sensor</string>
+    <string name="Mensaje">Mensaje</string>
+    <string name="Calendario">Calendario</string>
+    <string name="Switch">Permiso</string>
+</resources>

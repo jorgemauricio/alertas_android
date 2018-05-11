@@ -1,8 +1,11 @@
 package com.example.prado.estaciones;
 
 import android.Manifest;
+import android.app.Fragment;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -10,9 +13,10 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -66,11 +70,13 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
     boolean WiFI = false;
     boolean MoviL = false;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //** Pantalla completa
         requestWindowFeature(Window.FEATURE_NO_TITLE);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         //**
 
@@ -92,12 +98,22 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
 
                 mMap.clear();
+
+                ProgressDialog progressDialog = new ProgressDialog(Mapa.this);
+                progressDialog.setIndeterminate(true);
+                progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                progressDialog.setMessage("Descargando información...");
+                if (spiner_MPIO.getSelectedItemPosition() == 0){
+                    filtro = 1;
+                    new JSONTask(progressDialog).execute(URL());
+                }
                 if (spiner_MPIO.getSelectedItemPosition() != 0) {
                     filtro = 2;
                     mMap.clear();
                     Municipio = spiner_MPIO.getSelectedItem().toString();
                     if (WiFI != false || MoviL != false) {
-                        new JSONTask().execute(URL());
+
+                        new JSONTask(progressDialog).execute(URL());
                     }
                 }
 
@@ -135,7 +151,7 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
         actualizar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-conexion();
+                conexion();
             }
         });
 
@@ -174,17 +190,27 @@ conexion();
 
     //Proceso realizado en segundo plano, descarga de servicio web
     public class JSONTask extends AsyncTask<String, String, List<DatosEstaciones>> {
+        private final ProgressDialog progressDialog1;
         int au;
+
+        JSONTask(ProgressDialog progressDialog){
+            this.progressDialog1 = progressDialog;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog1.show();
+        }
 
         //Obtiene la URL del servicio web.
         @Override
         protected List<DatosEstaciones> doInBackground(String... param) {
 
-            HttpURLConnection urlConnection = null;
             try {
 
                 URL url = new URL(param[0]);
-                urlConnection = (HttpURLConnection) url.openConnection();
+                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.connect();
 
                 InputStream in = urlConnection.getInputStream();
@@ -248,7 +274,6 @@ conexion();
             } catch (JSONException e) {
                 e.printStackTrace();
             } finally {
-                if (urlConnection != null) urlConnection.disconnect();
             }
 
             return null;
@@ -259,19 +284,23 @@ conexion();
             super.onPostExecute(result);
             if (result != null) {
                 if (filtro == 1) {
-                    Toast.makeText(Mapa.this, "Carga completada existen " + result.size() + " estaciones en " + spiner_EDO.getSelectedItem().toString(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(Mapa.this, "Carga completada existen " + result.size() + " estaciones en " + spiner_EDO.getSelectedItem().toString(), Toast.LENGTH_SHORT).show();
+                    progressDialog1.dismiss();
                     if (!result.isEmpty()) {
                         for (int i = 0; i < result.size(); i++) {
                             createMarker(result.get(i).getLatitud(), result.get(i).getLongitud(), result.get(i).getNombre(),String.valueOf(result.get(i).getID()));
+                            progressDialog1.dismiss();
                         }
 
                     }
                 }
                 if (filtro == 2) {
-                    Toast.makeText(Mapa.this, "Carga completada existen " + result.size() + " estaciones en " + spiner_MPIO.getSelectedItem().toString(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(Mapa.this, "Carga completada existen " + result.size() + " estaciones en " + spiner_MPIO.getSelectedItem().toString(), Toast.LENGTH_SHORT).show();
+                    progressDialog1.dismiss();
                     if (!result.isEmpty()) {
                         for (int i = 0; i < result.size(); i++) {
                             createMarker(result.get(i).getLatitud(), result.get(i).getLongitud(), result.get(i).getNombre(),String.valueOf(result.get(i).getID()));
+                            progressDialog1.dismiss();
                         }
                     }
                 }
@@ -301,7 +330,6 @@ conexion();
         );
 
     }
-
 
     private String URL() {
 
@@ -409,7 +437,11 @@ conexion();
                     anuncio.setVisibility(View.INVISIBLE);
                     autoriza = true;
                     municipios();
-                    new JSONTask().execute(URL());
+                    ProgressDialog progressDialog = new ProgressDialog(Mapa.this);
+                    progressDialog.setIndeterminate(true);
+                    progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                    progressDialog.setMessage("Descargando información...");
+                    new JSONTask(progressDialog).execute(URL());
                 }else{
                     anuncio.setVisibility(View.VISIBLE);
                     autoriza = false;
@@ -435,7 +467,11 @@ conexion();
     }
 
     private void actualizar(){
-        new JSONTask().execute(URL());
+        ProgressDialog progressDialog = new ProgressDialog(Mapa.this);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setMessage("Descargando información...");
+
     }
     //Comprueba que tipo de conexión a red utiliza
     private void conexion(){
@@ -457,7 +493,15 @@ conexion();
                 Toast.makeText(this, "Conectado a red Móvil", Toast.LENGTH_SHORT).show();            }
 
             if (WiFI != false || MoviL != false){
-                new JSONTask().execute(URL());
+                ProgressDialog progressDialog = new ProgressDialog(Mapa.this);
+                progressDialog.setIndeterminate(true);
+                progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                progressDialog.setMessage("Descargando información...");
+                if (spiner_MPIO.getSelectedItemPosition() == 0){
+                    filtro = 1;
+                    new JSONTask(progressDialog).execute(URL());
+                }
+                new JSONTask(progressDialog).execute(URL());
 
             }
 

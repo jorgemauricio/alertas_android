@@ -23,12 +23,6 @@
         </activity>
         <activity android:name=".Altas"
             android:label="Registrar"/>
-        <activity android:name=".Consultas"
-            android:label="Buscar"/>
-        <activity android:name=".Bajas"
-            android:label="Eliminar"/>
-        <activity android:name=".Cambios"
-            android:label="Modificar"></activity>
 
         <provider
             android:name=".GenericFileProvider"

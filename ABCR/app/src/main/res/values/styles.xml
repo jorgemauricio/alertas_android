@@ -8,4 +8,10 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+
+    <style name="Miestilo" parent="Widget.AppCompat.PopupMenu">
+        <item name="android:colorBackground">#686565</item>
+        <item name="android:textColor">#fff</item>
+    </style>
+
 </resources>

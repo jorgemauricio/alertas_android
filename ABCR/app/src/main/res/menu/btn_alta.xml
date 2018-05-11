@@ -5,5 +5,20 @@
         android:icon="@android:drawable/ic_input_add"
         android:title="Agregar"
         android:id="@+id/Alta"
-        app:showAsAction="always"/>
+        app:showAsAction="never"/>
+    <item
+        android:icon="@android:drawable/ic_delete"
+        android:title="Eliminar"
+        android:id="@+id/Baja"
+        app:showAsAction="never"/>
+    <item
+        android:icon="@android:drawable/stat_notify_sync"
+        android:title="Actualizar"
+        android:id="@+id/Cambio"
+        app:showAsAction="never"/>
+    <item
+        android:icon="@android:drawable/ic_menu_report_image"
+        android:title="PDF"
+        android:id="@+id/Reporte"
+        app:showAsAction="never"/>
 </menu>

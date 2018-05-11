@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="300dp"
+    android:layout_gravity="center"
+    android:background="@drawable/login_style"
+    android:layout_width="290dp"
+    >
+
+    <TextView
+        android:id="@+id/login"
+        android:layout_width="74dp"
+        android:layout_height="38dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="28dp"
+        android:gravity="center"
+        android:text="Login"
+        android:textColor="#fff"
+        android:textSize="24dp" />
+
+    <EditText
+        android:id="@+id/user"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="93dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:hint="USUARIO"
+        android:textColor="#fff"/>
+
+    <EditText
+        android:id="@+id/pass"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="99dp"
+        android:ems="10"
+        android:hint="CONTRASEÑA"
+        android:inputType="textPersonName"
+        android:textColor="#fff" />
+
+    <Button
+        android:id="@+id/accesar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="34dp"
+        android:text="Accesar"
+        android:background="@drawable/botones"/>
+
+</RelativeLayout>
