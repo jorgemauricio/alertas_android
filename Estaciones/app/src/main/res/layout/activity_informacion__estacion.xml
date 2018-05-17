@@ -6,7 +6,10 @@
     android:layout_height="match_parent"
     android:background="#ffffff"
     tools:context=".Informacion_Estacion">
-
+    <ImageView
+        android:id="@+id/VentanaAlerta"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
     <TextView
         android:id="@+id/FechaI"
         android:layout_width="140dp"
@@ -45,9 +48,10 @@
 
     <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/GraficaLineal"
-        android:layout_width="360dp"
-        android:layout_height="570dp"
-        android:layout_marginTop="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="16dp"
+        android:layout_marginTop="50dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -68,33 +72,35 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/Compartit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginTop="4dp"
-        android:text="@string/btnCompartir"
-        android:background="@drawable/boton_disenio"
-        android:textColor="#ffffff"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
         android:id="@+id/Nuevo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="4dp"
+        android:layout_marginEnd="6dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="6dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="6dp"
+        android:background="@drawable/boton_disenio"
+        android:text="@string/btnNuevo"
+        android:textColor="#ffffff"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.928"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/eeee"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="4dp"
-        android:text="@string/btnNuevo"
-        app:layout_constraintEnd_toStartOf="@+id/Compartit"
-        app:layout_constraintHorizontal_bias="0.869"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:background="@drawable/boton_disenio"
-        android:textColor="#ffffff"
         app:layout_constraintTop_toTopOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

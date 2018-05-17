@@ -1,10 +1,12 @@
 package com.example.prado.estaciones;
 
+import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -17,6 +19,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -52,9 +55,11 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
 
     //Declaración de variable para Gráfica Lineal
     private LineChart lineChart;
+    private ImageView Compartir;
     boolean validar = true;
-    private Button Cargar, Compartir, Nuevo;
+    private Button Cargar, Nuevo;
     private TextView FechaI, FechaF;
+    private TextView cerrar,nom_est,UCA,fec,Fase,Alerta;
     final Calendar calendar = Calendar.getInstance();
     LineDataSet lineDataSet;
     LineData datos;
@@ -90,66 +95,112 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
         Cargar = (Button) findViewById(R.id.BuscarFechas);
         Nuevo = (Button) findViewById(R.id.Nuevo);
         Nuevo.setVisibility(View.INVISIBLE);
-        Compartir = (Button) findViewById(R.id.Compartit);
-        Compartir.setVisibility(View.INVISIBLE);
         FechaI = (TextView) findViewById(R.id.FechaI);
         FechaF = (TextView) findViewById(R.id.FechaF);
         Cargar.setOnClickListener(this);
         Nuevo.setOnClickListener(this);
-        Compartir.setOnClickListener(this);
         FechaI.setOnClickListener(this);
         FechaF.setOnClickListener(this);
         lineChart.setNoDataText("Sin datos para mostrar");
         dialog = new Dialog(this);
 
 
+
         NombreEstacion = getIntent().getStringExtra("Nombre");
         Nestacion = getIntent().getStringExtra("Nestacion");
 
-        lineChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener()
-        {
+        lineChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
             @Override
-            public void onValueSelected(Entry e, Highlight h)
-            {
-                TextView cerrar,nom_est,UCA,fec,Fase,Alerta;
-                float x=e.getX();
-                float y=e.getY();
+            public void onValueSelected(Entry e, Highlight h) {
+
+                float x = e.getX();
+                float y = e.getY();
+
+
+
                 if (x == posX && y == posY) {
-                    dialog.setContentView(R.layout.alerta_view);
-
-                    Alerta = (TextView) dialog.findViewById(R.id.Alerta);
-                    nom_est = (TextView) dialog.findViewById(R.id.Nom_estacion);
-                    UCA = (TextView) dialog.findViewById(R.id.UCA);
-                    fec = (TextView) dialog.findViewById(R.id.Fecha);
-                    Fase = (TextView) dialog.findViewById(R.id.Fase);
-                    cerrar = (TextView) dialog.findViewById(R.id.cerrar);
-
-                    Alerta.setText("Alerta");
-                    nom_est.setText("Estación: " + NombreEstacion.replace("_"," "));
-                    fec.setText("Fecha: " + fecpop);
-                    UCA.setText("Unidades calor acumuladas: " + String.valueOf(UCApop) + " UC");
-                    Fase.setText("Fase: Pupa");
-
-                    cerrar.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            dialog.dismiss();
-                        }
-                    });
+                   Alerta();
 
 
-                    dialog.show();
+
+
+
                 }
+
+
             }
 
             @Override
-            public void onNothingSelected()
-            {
+            public void onNothingSelected() {
 
             }
         });
 
-      }
+    }
+
+    public void Alerta(){
+        dialog.setContentView(R.layout.alerta_view);
+        final View cuadroalerta;
+
+        Alerta = (TextView) dialog.findViewById(R.id.Alerta);
+        nom_est = (TextView) dialog.findViewById(R.id.Nom_estacion);
+        UCA = (TextView) dialog.findViewById(R.id.UCA);
+        fec = (TextView) dialog.findViewById(R.id.Fecha);
+        Fase = (TextView) dialog.findViewById(R.id.Fase);
+        cerrar = (TextView) dialog.findViewById(R.id.cerrar);
+        Compartir = (ImageView) dialog.findViewById(R.id.Compartir);
+        cuadroalerta = (View)dialog.findViewById(R.id.FondoAlerta);
+
+
+
+        Alerta.setText("Alerta");
+        nom_est.setText("Estación: " + NombreEstacion.replace("_", " "));
+        fec.setText("Fecha: " + fecpop);
+        UCA.setText("Unidades calor acumuladas: " + String.valueOf(UCApop) + " UC");
+        Fase.setText("Fase: Pupa");
+
+
+        cerrar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        Compartir.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Bitmap screenshot = Screenshot.tomarRutadeScreenshot(cuadroalerta);
+                saveScreenshot(screenshot);
+                grabar();
+                Compartir();
+            }
+        });
+        dialog.show();
+    }
+
+    private void saveScreenshot(Bitmap bitmap) {
+
+
+        try {
+            // nombre y ruta de la imagen a incluir
+            String mPath = Environment.getExternalStorageDirectory().toString() + File.separator + Carpeta + "Captura.png";
+
+            File imageFile = new File(mPath);
+
+            FileOutputStream outputStream = new FileOutputStream(imageFile);
+            int quality = 100;
+            bitmap.compress(Bitmap.CompressFormat.PNG, quality, outputStream);
+            outputStream.flush();
+            outputStream.close();
+
+        } catch (Throwable e) {
+            // Captura los distintos errores que puedan surgir
+            e.printStackTrace();
+        }
+    }
+
+
 
     DatePickerDialog.OnDateSetListener dI = new DatePickerDialog.OnDateSetListener() {
 
@@ -222,10 +273,6 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
             } else {
                 Toast.makeText(Informacion_Estacion.this, "Ingresa una fecha Inicial", Toast.LENGTH_SHORT).show();
             }
-        }
-        if (v == Compartir) {
-            grabar();
-            Compartir();
         }
         if (v == Nuevo) {
             finish();
@@ -310,6 +357,7 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
                     DatosEnEjeY.add(new Entry(i, (float) UnidadesCalor(result.get(i).getTmax(), result.get(i).getTmin())));
                     AcumuladoEnEjeY.add(new Entry(i , (float) acomulado));
                     valoresX.add(result.get(i).getFecha());
+
                     if(acomulado >= 1019 && validar) {
                         AcumuladoEnEjeYAlerta.add(new Entry(i, (float) acomulado));
                         posX = AcumuladoEnEjeYAlerta.get(0).getX();
@@ -319,6 +367,8 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
                         fecpop = result.get(i).getFecha();
                         UCApop = (int) acomulado;
                         validar = false;
+
+
                     }
                     CSV += result.get(i).getFecha() + "," + result.get(i).getTmax() + "," + result.get(i).getTmin() + "," + UnidadesCalor(result.get(i).getTmax(), result.get(i).getTmin()) +","+ acomulado +"\n";
                 }
@@ -409,22 +459,25 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
         Cargar.setVisibility(View.INVISIBLE);
         FechaI.setVisibility(View.INVISIBLE);
         FechaF.setVisibility(View.INVISIBLE);
-        Compartir.setVisibility(View.VISIBLE);
         Nuevo.setVisibility(View.VISIBLE);
     }
 
+    @SuppressLint("ResourceType")
     private void Compartir() {
         NombreEstacion = NombreEstacion.replace(" ","_");
         String NombreArchivo = NombreEstacion + "_Datos_UC_" + DiaI + "-" + MesI + "-" + AnioI + "_" + DiaF + "-" + MesF + "-" + AnioF + ".csv";
         String path = Environment.getExternalStorageDirectory() + File.separator + Ruta_Imagen + File.separator + NombreArchivo;
         String pathG = Environment.getExternalStorageDirectory() + File.separator + Carpeta + File.separator + "Grafica_prueba.png";
+        String pathC = Environment.getExternalStorageDirectory() + File.separator + Carpeta + File.separator + "Captura.png";
         ArrayList<Uri> archivosCarga = new ArrayList<Uri>();
 
         File fileWithinMyDir = new File(path);
         System.out.println(fileWithinMyDir);
 
+
         archivosCarga.add(FileProvider.getUriForFile(this,"com.example.prado.estaciones",new File(path)));
         archivosCarga.add(FileProvider.getUriForFile(this,"com.example.prado.estaciones",new File(pathG)));
+        archivosCarga.add(FileProvider.getUriForFile(this,"com.example.prado.estaciones",new File(pathC)));
 
         if (fileWithinMyDir.exists()) {
 
@@ -461,11 +514,8 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
         try {
             FileOutputStream fos = new FileOutputStream(ruta);
             fos.write(CSV.getBytes());
-            //fos.write(ALERTA.getBytes());
             fos.close();
             lineChart.saveToPath("Grafica_prueba", File.separator + Carpeta);
-            System.out.println(Carpeta);
-            //Toast.makeText(this, "Archivo guardado", Toast.LENGTH_SHORT).show();
         } catch (IOException e) {
             e.printStackTrace();
         }
