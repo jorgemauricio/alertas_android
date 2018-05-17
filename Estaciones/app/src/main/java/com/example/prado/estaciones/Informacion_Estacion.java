@@ -59,7 +59,7 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
     boolean validar = true;
     private Button Cargar, Nuevo;
     private TextView FechaI, FechaF;
-    private TextView cerrar,nom_est,UCA,fec,Fase,Alerta;
+    private TextView cerrar,InformacionAlerta,Alerta;
     final Calendar calendar = Calendar.getInstance();
     LineDataSet lineDataSet;
     LineData datos;
@@ -143,10 +143,7 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
         final View cuadroalerta;
 
         Alerta = (TextView) dialog.findViewById(R.id.Alerta);
-        nom_est = (TextView) dialog.findViewById(R.id.Nom_estacion);
-        UCA = (TextView) dialog.findViewById(R.id.UCA);
-        fec = (TextView) dialog.findViewById(R.id.Fecha);
-        Fase = (TextView) dialog.findViewById(R.id.Fase);
+        InformacionAlerta = (TextView) dialog.findViewById(R.id.InformacionAlerta);
         cerrar = (TextView) dialog.findViewById(R.id.cerrar);
         Compartir = (ImageView) dialog.findViewById(R.id.Compartir);
         cuadroalerta = (View)dialog.findViewById(R.id.FondoAlerta);
@@ -154,10 +151,13 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
 
 
         Alerta.setText("Alerta");
-        nom_est.setText("Estación: " + NombreEstacion.replace("_", " "));
-        fec.setText("Fecha: " + fecpop);
-        UCA.setText("Unidades calor acumuladas: " + String.valueOf(UCApop) + " UC");
-        Fase.setText("Fase: Pupa");
+        InformacionAlerta.setText(
+                "Estación: "+ NombreEstacion.replace("_", " ") + "\n\n" +
+                "Fecha de alerta: " + fecpop + "\n\n" +
+                "UCA a la fecha: " + String.valueOf(UCApop) + " UC" + "\n\n" +
+                "Fase biológica estimada: Pupa" + "\n\n" +
+                "Areas de influencia: 5 km de radio" + "\n\n" +
+                "Recomendación: Método de control químico");
 
 
         cerrar.setOnClickListener(new View.OnClickListener() {
