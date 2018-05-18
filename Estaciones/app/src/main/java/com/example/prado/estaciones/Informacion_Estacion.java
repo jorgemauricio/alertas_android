@@ -14,6 +14,7 @@ import android.os.Environment;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -61,11 +62,11 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
     private TextView FechaI, FechaF;
     private TextView cerrar,InformacionAlerta,Alerta;
     final Calendar calendar = Calendar.getInstance();
-    LineDataSet lineDataSet;
-    LineData datos;
+    private LineDataSet lineDataSet;
+    private LineData datos;
     private int DiaI, MesI, AnioI, DiaF, MesF, AnioF;
     private String CSV = "Fecha,Tmax,Tmin,UCD,UCA\n";
-    double UC = 0;
+    private double UC = 0;
     private float posX = 0, posY = 0;
     private String nombre,NombreEstacion;
     private ArrayList<String> DatosEnEjeX = new ArrayList<>();
@@ -80,7 +81,7 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
     private Dialog dialog;
     private String fecpop;
     private int UCApop;
-
+    private View cuadroalerta,FondoAlertaEstacion;
 
 
     @Override
@@ -103,6 +104,8 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
         FechaF.setOnClickListener(this);
         lineChart.setNoDataText("Sin datos para mostrar");
         dialog = new Dialog(this);
+        FondoAlertaEstacion = (View)findViewById(R.id.FondoInformacionEstacion);
+
 
 
 
@@ -116,20 +119,12 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
                 float x = e.getX();
                 float y = e.getY();
 
-
-
                 if (x == posX && y == posY) {
                    Alerta();
-
-
-
-
+                    lineChart.fitScreen();
 
                 }
-
-
             }
-
             @Override
             public void onNothingSelected() {
 
@@ -140,7 +135,6 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
 
     public void Alerta(){
         dialog.setContentView(R.layout.alerta_view);
-        final View cuadroalerta;
 
         Alerta = (TextView) dialog.findViewById(R.id.Alerta);
         InformacionAlerta = (TextView) dialog.findViewById(R.id.InformacionAlerta);
@@ -164,6 +158,7 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
+                FondoAlertaEstacion.setBackgroundColor(Color.parseColor("#ffffff"));
             }
         });
 
@@ -176,7 +171,10 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
                 Compartir();
             }
         });
+        dialog.setCancelable(false);
+        dialog.setCanceledOnTouchOutside(false);
         dialog.show();
+        FondoAlertaEstacion.setBackgroundColor(Color.argb(2,174,171,170));
     }
 
     private void saveScreenshot(Bitmap bitmap) {
@@ -352,6 +350,7 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
             super.onPostExecute(result);
             if (result != null) {
                 double acomulado = 0;
+
                 for (int i = 0; i < result.size(); i++) {
                     acomulado += UnidadesCalor(result.get(i).getTmax(), result.get(i).getTmin());
                     DatosEnEjeY.add(new Entry(i, (float) UnidadesCalor(result.get(i).getTmax(), result.get(i).getTmin())));
@@ -431,7 +430,10 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
                 progressDialog.dismiss();
 
                 lineChart.isSaveEnabled();
+
+
                 lineChart.invalidate();
+
 
             } else {
                 Toast.makeText(Informacion_Estacion.this, "No existe información", Toast.LENGTH_SHORT).show();

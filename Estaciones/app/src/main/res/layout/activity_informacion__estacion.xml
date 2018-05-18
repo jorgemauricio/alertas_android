@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#ffffff"
-    tools:context=".Informacion_Estacion">
+    tools:context=".Informacion_Estacion"
+    android:id="@+id/FondoInformacionEstacion">
     <ImageView
         android:id="@+id/VentanaAlerta"
         android:layout_width="match_parent"
