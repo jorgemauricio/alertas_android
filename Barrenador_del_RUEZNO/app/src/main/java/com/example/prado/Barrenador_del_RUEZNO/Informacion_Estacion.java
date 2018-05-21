@@ -474,7 +474,7 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
 
                 if(validarPreoviposicion == false) {
                     lineDataSetAcomuladoAlerta1.setDrawCircles(true);
-                    lineDataSetAcomuladoAlerta1.setCircleColor(Color.rgb(254, 0, 0));
+                    lineDataSetAcomuladoAlerta1.setCircleColor(Color.parseColor("#ECFF33"));
                     lineDataSetAcomuladoAlerta1.setCircleRadius(8f);
                     lineDataSetAcomuladoAlerta1.setDrawCircleHole(false);
                     lineDataSetAcomuladoAlerta1.setLineWidth(0f);
@@ -485,7 +485,7 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
                     lineDataSets.add(lineDataSetAcomuladoAlerta1);
                 }if(validarHuevo == false) {
                     lineDataSetAcomuladoAlerta2.setDrawCircles(true);
-                    lineDataSetAcomuladoAlerta2.setCircleColor(Color.rgb(254, 0, 0));
+                    lineDataSetAcomuladoAlerta2.setCircleColor(Color.parseColor("#E6AA21"));
                     lineDataSetAcomuladoAlerta2.setCircleRadius(8f);
                     lineDataSetAcomuladoAlerta2.setDrawCircleHole(false);
                     lineDataSetAcomuladoAlerta2.setLineWidth(0f);
@@ -496,7 +496,7 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
                     lineDataSets.add(lineDataSetAcomuladoAlerta2);
                 }if(validarOviposicion == false) {
                     lineDataSetAcomuladoAlerta3.setDrawCircles(true);
-                    lineDataSetAcomuladoAlerta3.setCircleColor(Color.rgb(254, 0, 0));
+                    lineDataSetAcomuladoAlerta3.setCircleColor(Color.parseColor("#E67B21"));
                     lineDataSetAcomuladoAlerta3.setCircleRadius(8f);
                     lineDataSetAcomuladoAlerta3.setDrawCircleHole(false);
                     lineDataSetAcomuladoAlerta3.setLineWidth(0f);
@@ -507,7 +507,7 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
                     lineDataSets.add(lineDataSetAcomuladoAlerta3);
                 }if(validarLarvaPupa == false) {
                     lineDataSetAcomuladoAlerta4.setDrawCircles(true);
-                    lineDataSetAcomuladoAlerta4.setCircleColor(Color.rgb(254, 0, 0));
+                    lineDataSetAcomuladoAlerta4.setCircleColor(Color.parseColor("#E15B21"));
                     lineDataSetAcomuladoAlerta4.setCircleRadius(8f);
                     lineDataSetAcomuladoAlerta4.setDrawCircleHole(false);
                     lineDataSetAcomuladoAlerta4.setLineWidth(0f);
@@ -518,7 +518,7 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
                     lineDataSets.add(lineDataSetAcomuladoAlerta4);
                 }if(validarAdultoAdulto == false) {
                     lineDataSetAcomuladoAlerta5.setDrawCircles(true);
-                    lineDataSetAcomuladoAlerta5.setCircleColor(Color.rgb(254, 0, 0));
+                    lineDataSetAcomuladoAlerta5.setCircleColor(Color.parseColor("#F70707"));
                     lineDataSetAcomuladoAlerta5.setCircleRadius(8f);
                     lineDataSetAcomuladoAlerta5.setDrawCircleHole(false);
                     lineDataSetAcomuladoAlerta5.setLineWidth(0f);
