@@ -15,7 +15,7 @@
         android:theme="@style/Theme.AppCompat.NoActionBar">
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="@string/KeyThinkPad"/>
+            android:value="@string/Ruezno"/>
 
         <activity android:name="com.example.prado.Barrenador_del_RUEZNO.Inicio">
             <intent-filter>

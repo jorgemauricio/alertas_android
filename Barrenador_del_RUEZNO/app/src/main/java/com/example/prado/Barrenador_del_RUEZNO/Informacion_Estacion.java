@@ -65,20 +65,28 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
     private int DiaI, MesI, AnioI, DiaF, MesF, AnioF;
     private String CSV = "Fecha,Tmax,Tmin,UCD,UCA\n";
     private double UC = 0;
-    private float posX = 0, posY = 0;
+    private float posX1 = 0, posY1 = 0;
+    private float posX2 = 0, posY2 = 0;
+    private float posX3 = 0, posY3 = 0;
+    private float posX4 = 0, posY4 = 0;
+    private float posX5 = 0, posY5 = 0;
     private String nombre,NombreEstacion;
     private ArrayList<String> DatosEnEjeX = new ArrayList<>();
     private ArrayList<Entry> DatosEnEjeY = new ArrayList<>();
     private ArrayList<Entry> AcumuladoEnEjeY = new ArrayList<>();
-    private ArrayList<Entry> AcumuladoEnEjeYAlerta = new ArrayList<>();
+    private ArrayList<Entry> AcumuladoEnEjeYAlerta1 = new ArrayList<>();
+    private ArrayList<Entry> AcumuladoEnEjeYAlerta2 = new ArrayList<>();
+    private ArrayList<Entry> AcumuladoEnEjeYAlerta3 = new ArrayList<>();
+    private ArrayList<Entry> AcumuladoEnEjeYAlerta4 = new ArrayList<>();
+    private ArrayList<Entry> AcumuladoEnEjeYAlerta5 = new ArrayList<>();
     private ArrayList valoresX = new ArrayList();
     private ArrayList<ILineDataSet> lineDataSets = new ArrayList<>();
     ArrayList<UnidadesCalor> listUC = new ArrayList<UnidadesCalor>();
     private String Nestacion;
     private final String Carpeta = "UnidadesCalor/", Ruta_Imagen =Carpeta+"UC";
     private Dialog dialog;
-    private String fecpop;
-    private int UCApop;
+    private String fecpop1, Fase1,fecpop2, Fase2,fecpop3, Fase3,fecpop4, Fase4,fecpop5, Fase5;
+    private int UCApop1,UCApop2,UCApop3,UCApop4,UCApop5;
     private View cuadroalerta,FondoAlertaEstacion;
 
 
@@ -104,9 +112,6 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
         dialog = new Dialog(this);
         FondoAlertaEstacion = (View)findViewById(R.id.FondoInformacionEstacion);
 
-
-
-
         NombreEstacion = getIntent().getStringExtra("Nombre");
         Nestacion = getIntent().getStringExtra("Nestacion");
 
@@ -117,10 +122,16 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
                 float x = e.getX();
                 float y = e.getY();
 
-                if (x == posX && y == posY) {
-                   Alerta();
-                    lineChart.fitScreen();
-
+                if (x == posX1 && y == posY1) {
+                   Alerta(1);
+                } if (x == posX2 && y == posY2) {
+                    Alerta(2);
+                } if (x == posX3 && y == posY3) {
+                    Alerta(3);
+                } if (x == posX4 && y == posY4) {
+                    Alerta(4);
+                } if (x == posX5 && y == posY5) {
+                    Alerta(5);
                 }
             }
             @Override
@@ -131,7 +142,7 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
 
     }
 
-    public void Alerta(){
+    public void Alerta(int fase){
         dialog.setContentView(R.layout.alerta_view);
 
         Alerta = (TextView) dialog.findViewById(R.id.Alerta);
@@ -143,14 +154,47 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
 
 
         Alerta.setText("Alerta");
-        InformacionAlerta.setText(
-                "Estación: "+ NombreEstacion.replace("_", " ") + "\n\n" +
-                "Fecha de alerta: " + fecpop + "\n\n" +
-                "UCA a la fecha: " + String.valueOf(UCApop) + " UC" + "\n\n" +
-                "Fase biológica estimada: Pupa" + "\n\n" +
-                "Areas de influencia: 5 km de radio" + "\n\n" +
-                "Recomendación: Método de control químico");
-
+        if (fase == 1) {
+            InformacionAlerta.setText(
+                    "Estación: " + NombreEstacion.replace("_", " ") + "\n\n" +
+                            "Fecha de alerta: " + fecpop1 + "\n\n" +
+                            "UCA a la fecha: " + String.valueOf(UCApop1) + " UC" + "\n\n" +
+                            "Fase biológica estimada: " + Fase1 + "\n\n" +
+                            "Areas de influencia: 5 km de radio" + "\n\n" +
+                            "Recomendación: Método de control químico");
+        }if (fase == 2) {
+            InformacionAlerta.setText(
+                    "Estación: " + NombreEstacion.replace("_", " ") + "\n\n" +
+                            "Fecha de alerta: " + fecpop2 + "\n\n" +
+                            "UCA a la fecha: " + String.valueOf(UCApop2) + " UC" + "\n\n" +
+                            "Fase biológica estimada: " + Fase2 + "\n\n" +
+                            "Areas de influencia: 5 km de radio" + "\n\n" +
+                            "Recomendación: Método de control químico");
+        }if (fase == 3) {
+            InformacionAlerta.setText(
+                    "Estación: " + NombreEstacion.replace("_", " ") + "\n\n" +
+                            "Fecha de alerta: " + fecpop3 + "\n\n" +
+                            "UCA a la fecha: " + String.valueOf(UCApop3) + " UC" + "\n\n" +
+                            "Fase biológica estimada: " + Fase3 + "\n\n" +
+                            "Areas de influencia: 5 km de radio" + "\n\n" +
+                            "Recomendación: Método de control químico");
+        }if (fase == 4) {
+            InformacionAlerta.setText(
+                    "Estación: " + NombreEstacion.replace("_", " ") + "\n\n" +
+                            "Fecha de alerta: " + fecpop4 + "\n\n" +
+                            "UCA a la fecha: " + String.valueOf(UCApop4) + " UC" + "\n\n" +
+                            "Fase biológica estimada: " + Fase4 + "\n\n" +
+                            "Areas de influencia: 5 km de radio" + "\n\n" +
+                            "Recomendación: Método de control químico");
+        }if (fase == 5) {
+            InformacionAlerta.setText(
+                    "Estación: " + NombreEstacion.replace("_", " ") + "\n\n" +
+                            "Fecha de alerta: " + fecpop5 + "\n\n" +
+                            "UCA a la fecha: " + String.valueOf(UCApop5) + " UC" + "\n\n" +
+                            "Fase biológica estimada: " + Fase5 + "\n\n" +
+                            "Areas de influencia: 5 km de radio" + "\n\n" +
+                            "Recomendación: Método de control químico");
+        }
 
         cerrar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -163,6 +207,7 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
         Compartir.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                lineChart.fitScreen();
                 Bitmap screenshot = Screenshot.tomarRutadeScreenshot(cuadroalerta);
                 saveScreenshot(screenshot);
                 grabar();
@@ -310,14 +355,14 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
                     buffer.append(lineas);
                 }
 
-                if (buffer.toString().equals("{\"Barrenador_del_RUEZNO\":[]}")) {
+                if (buffer.toString().equals("{\"estaciones\":[]}")) {
                     return null;
 
                 }else {
                 String finaljson = buffer.toString();
 
                     JSONObject jsonObject = new JSONObject(finaljson);
-                    JSONArray jsonArray = jsonObject.getJSONArray("Barrenador_del_RUEZNO");
+                    JSONArray jsonArray = jsonObject.getJSONArray("estaciones");
                     JSONObject objetofinal;
                     System.out.println(buffer.toString());
                     for (int i = 0; i < jsonArray.length(); i++) {
@@ -356,60 +401,55 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
                     valoresX.add(result.get(i).getFecha());
 
                     if(acomulado >= 55.9 && validarPreoviposicion) {
-                        AcumuladoEnEjeYAlerta.add(new Entry(i, (float) acomulado));
-                        posX = AcumuladoEnEjeYAlerta.get(0).getX();
-                        System.out.println("Posición en X: " + posX);
-                        posY = AcumuladoEnEjeYAlerta.get(0).getY();
-                        System.out.println("Posición en Y: " + posY);
-                        fecpop = result.get(i).getFecha();
-                        UCApop = (int) acomulado;
+                        AcumuladoEnEjeYAlerta1.add(new Entry(i, (float) acomulado));
+                        posX1 = AcumuladoEnEjeYAlerta1.get(0).getX();
+                        posY1 = AcumuladoEnEjeYAlerta1.get(0).getY();
+                        fecpop1 = result.get(i).getFecha();
+                        UCApop1 = (int) acomulado;
+                        Fase1 = "Preoviposición";
                         validarPreoviposicion = false;
                     }if(acomulado >= 66.2 && validarHuevo) {
-                        AcumuladoEnEjeYAlerta.add(new Entry(i, (float) acomulado));
-                        posX = AcumuladoEnEjeYAlerta.get(0).getX();
-                        System.out.println("Posición en X: " + posX);
-                        posY = AcumuladoEnEjeYAlerta.get(0).getY();
-                        System.out.println("Posición en Y: " + posY);
-                        fecpop = result.get(i).getFecha();
-                        UCApop = (int) acomulado;
+                        AcumuladoEnEjeYAlerta2.add(new Entry(i, (float) acomulado));
+                        posX2 = AcumuladoEnEjeYAlerta2.get(0).getX();
+                        posY2 = AcumuladoEnEjeYAlerta2.get(0).getY();
+                        fecpop2 = result.get(i).getFecha();
+                        UCApop2 = (int) acomulado;
+                        Fase2 = "Huevo";
                         validarHuevo = false;
                     }if(acomulado >= 47.7 && validarOviposicion) {
-                        AcumuladoEnEjeYAlerta.add(new Entry(i, (float) acomulado));
-                        posX = AcumuladoEnEjeYAlerta.get(0).getX();
-                        System.out.println("Posición en X: " + posX);
-                        posY = AcumuladoEnEjeYAlerta.get(0).getY();
-                        System.out.println("Posición en Y: " + posY);
-                        fecpop = result.get(i).getFecha();
-                        UCApop = (int) acomulado;
+                        AcumuladoEnEjeYAlerta3.add(new Entry(i, (float) acomulado));
+                        posX3 = AcumuladoEnEjeYAlerta3.get(0).getX();
+                        posY3 = AcumuladoEnEjeYAlerta3.get(0).getY();
+                        fecpop3 = result.get(i).getFecha();
+                        UCApop3 = (int) acomulado;
+                        Fase3= "Oviposición";
                         validarOviposicion = false;
                     }if(acomulado >= 545.3 && validarLarvaPupa) {
-                        AcumuladoEnEjeYAlerta.add(new Entry(i, (float) acomulado));
-                        posX = AcumuladoEnEjeYAlerta.get(0).getX();
-                        System.out.println("Posición en X: " + posX);
-                        posY = AcumuladoEnEjeYAlerta.get(0).getY();
-                        System.out.println("Posición en Y: " + posY);
-                        fecpop = result.get(i).getFecha();
-                        UCApop = (int) acomulado;
+                        AcumuladoEnEjeYAlerta4.add(new Entry(i, (float) acomulado));
+                        posX4 = AcumuladoEnEjeYAlerta4.get(0).getX();
+                        posY4 = AcumuladoEnEjeYAlerta4.get(0).getY();
+                        fecpop4 = result.get(i).getFecha();
+                        UCApop4 = (int) acomulado;
+                        Fase4 = "Larva Pupa";
                         validarLarvaPupa = false;
                     }if(acomulado >= 612.3 && validarAdultoAdulto) {
-                        AcumuladoEnEjeYAlerta.add(new Entry(i, (float) acomulado));
-                        posX = AcumuladoEnEjeYAlerta.get(0).getX();
-                        System.out.println("Posición en X: " + posX);
-                        posY = AcumuladoEnEjeYAlerta.get(0).getY();
-                        System.out.println("Posición en Y: " + posY);
-                        fecpop = result.get(i).getFecha();
-                        UCApop = (int) acomulado;
+                        AcumuladoEnEjeYAlerta5.add(new Entry(i, (float) acomulado));
+                        posX5 = AcumuladoEnEjeYAlerta5.get(0).getX();
+                        posY5 = AcumuladoEnEjeYAlerta5.get(0).getY();
+                        fecpop5 = result.get(i).getFecha();
+                        UCApop5 = (int) acomulado;
+                        Fase5 = "Adulto";
                         validarAdultoAdulto = false;
                     }
-
-
-
-
                     CSV += result.get(i).getFecha() + "," + result.get(i).getTmax() + "," + result.get(i).getTmin() + "," + UnidadesCalor(result.get(i).getTmax(), result.get(i).getTmin()) +","+ acomulado +"\n";
                 }
 
                 LineDataSet lineDataSetAcomulado = new LineDataSet(AcumuladoEnEjeY,"UCDA");
-                LineDataSet lineDataSetAcomuladoAlerta = new LineDataSet(AcumuladoEnEjeYAlerta,"Alerta");
+                LineDataSet lineDataSetAcomuladoAlerta1 = new LineDataSet(AcumuladoEnEjeYAlerta1,"Preoviposición");
+                LineDataSet lineDataSetAcomuladoAlerta2 = new LineDataSet(AcumuladoEnEjeYAlerta2,"Huevo");
+                LineDataSet lineDataSetAcomuladoAlerta3 = new LineDataSet(AcumuladoEnEjeYAlerta3,"Oviposición");
+                LineDataSet lineDataSetAcomuladoAlerta4 = new LineDataSet(AcumuladoEnEjeYAlerta4,"Pupa");
+                LineDataSet lineDataSetAcomuladoAlerta5 = new LineDataSet(AcumuladoEnEjeYAlerta5,"Adulto");
                 lineDataSet = new LineDataSet(DatosEnEjeY, "UCD");
 
                 //lineDataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
@@ -433,70 +473,61 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
 
 
                 if(validarPreoviposicion == false) {
-                    lineDataSetAcomuladoAlerta.setDrawCircles(true);
-                    lineDataSetAcomuladoAlerta.setCircleColor(Color.rgb(254, 0, 0));
-                    lineDataSetAcomuladoAlerta.setCircleRadius(8f);
-                    lineDataSetAcomuladoAlerta.setDrawCircleHole(false);
-                    lineDataSetAcomuladoAlerta.setLineWidth(0f);
-                    lineDataSetAcomuladoAlerta.setColor(Color.rgb(254, 93, 64));
-                    lineDataSetAcomuladoAlerta.setValueTextSize(0f);
-                    lineDataSetAcomuladoAlerta.setValueTextColor(Color.BLACK);
-                    lineDataSetAcomuladoAlerta.setAxisDependency(YAxis.AxisDependency.LEFT);
-                    lineDataSets.add(lineDataSetAcomuladoAlerta);
+                    lineDataSetAcomuladoAlerta1.setDrawCircles(true);
+                    lineDataSetAcomuladoAlerta1.setCircleColor(Color.rgb(254, 0, 0));
+                    lineDataSetAcomuladoAlerta1.setCircleRadius(8f);
+                    lineDataSetAcomuladoAlerta1.setDrawCircleHole(false);
+                    lineDataSetAcomuladoAlerta1.setLineWidth(0f);
+                    lineDataSetAcomuladoAlerta1.setColor(Color.rgb(254, 93, 64));
+                    lineDataSetAcomuladoAlerta1.setValueTextSize(0f);
+                    lineDataSetAcomuladoAlerta1.setValueTextColor(Color.BLACK);
+                    lineDataSetAcomuladoAlerta1.setAxisDependency(YAxis.AxisDependency.LEFT);
+                    lineDataSets.add(lineDataSetAcomuladoAlerta1);
                 }if(validarHuevo == false) {
-                    lineDataSetAcomuladoAlerta.setDrawCircles(true);
-                    lineDataSetAcomuladoAlerta.setCircleColor(Color.rgb(254, 0, 0));
-                    lineDataSetAcomuladoAlerta.setCircleRadius(8f);
-                    lineDataSetAcomuladoAlerta.setDrawCircleHole(false);
-                    lineDataSetAcomuladoAlerta.setLineWidth(0f);
-                    lineDataSetAcomuladoAlerta.setColor(Color.rgb(254, 93, 64));
-                    lineDataSetAcomuladoAlerta.setValueTextSize(0f);
-                    lineDataSetAcomuladoAlerta.setValueTextColor(Color.BLACK);
-                    lineDataSetAcomuladoAlerta.setAxisDependency(YAxis.AxisDependency.LEFT);
-                    lineDataSets.add(lineDataSetAcomuladoAlerta);
+                    lineDataSetAcomuladoAlerta2.setDrawCircles(true);
+                    lineDataSetAcomuladoAlerta2.setCircleColor(Color.rgb(254, 0, 0));
+                    lineDataSetAcomuladoAlerta2.setCircleRadius(8f);
+                    lineDataSetAcomuladoAlerta2.setDrawCircleHole(false);
+                    lineDataSetAcomuladoAlerta2.setLineWidth(0f);
+                    lineDataSetAcomuladoAlerta2.setColor(Color.rgb(254, 93, 64));
+                    lineDataSetAcomuladoAlerta2.setValueTextSize(0f);
+                    lineDataSetAcomuladoAlerta2.setValueTextColor(Color.BLACK);
+                    lineDataSetAcomuladoAlerta2.setAxisDependency(YAxis.AxisDependency.LEFT);
+                    lineDataSets.add(lineDataSetAcomuladoAlerta2);
                 }if(validarOviposicion == false) {
-                    lineDataSetAcomuladoAlerta.setDrawCircles(true);
-                    lineDataSetAcomuladoAlerta.setCircleColor(Color.rgb(254, 0, 0));
-                    lineDataSetAcomuladoAlerta.setCircleRadius(8f);
-                    lineDataSetAcomuladoAlerta.setDrawCircleHole(false);
-                    lineDataSetAcomuladoAlerta.setLineWidth(0f);
-                    lineDataSetAcomuladoAlerta.setColor(Color.rgb(254, 93, 64));
-                    lineDataSetAcomuladoAlerta.setValueTextSize(0f);
-                    lineDataSetAcomuladoAlerta.setValueTextColor(Color.BLACK);
-                    lineDataSetAcomuladoAlerta.setAxisDependency(YAxis.AxisDependency.LEFT);
-                    lineDataSets.add(lineDataSetAcomuladoAlerta);
+                    lineDataSetAcomuladoAlerta3.setDrawCircles(true);
+                    lineDataSetAcomuladoAlerta3.setCircleColor(Color.rgb(254, 0, 0));
+                    lineDataSetAcomuladoAlerta3.setCircleRadius(8f);
+                    lineDataSetAcomuladoAlerta3.setDrawCircleHole(false);
+                    lineDataSetAcomuladoAlerta3.setLineWidth(0f);
+                    lineDataSetAcomuladoAlerta3.setColor(Color.rgb(254, 93, 64));
+                    lineDataSetAcomuladoAlerta3.setValueTextSize(0f);
+                    lineDataSetAcomuladoAlerta3.setValueTextColor(Color.BLACK);
+                    lineDataSetAcomuladoAlerta3.setAxisDependency(YAxis.AxisDependency.LEFT);
+                    lineDataSets.add(lineDataSetAcomuladoAlerta3);
                 }if(validarLarvaPupa == false) {
-                    lineDataSetAcomuladoAlerta.setDrawCircles(true);
-                    lineDataSetAcomuladoAlerta.setCircleColor(Color.rgb(254, 0, 0));
-                    lineDataSetAcomuladoAlerta.setCircleRadius(8f);
-                    lineDataSetAcomuladoAlerta.setDrawCircleHole(false);
-                    lineDataSetAcomuladoAlerta.setLineWidth(0f);
-                    lineDataSetAcomuladoAlerta.setColor(Color.rgb(254, 93, 64));
-                    lineDataSetAcomuladoAlerta.setValueTextSize(0f);
-                    lineDataSetAcomuladoAlerta.setValueTextColor(Color.BLACK);
-                    lineDataSetAcomuladoAlerta.setAxisDependency(YAxis.AxisDependency.LEFT);
-                    lineDataSets.add(lineDataSetAcomuladoAlerta);
+                    lineDataSetAcomuladoAlerta4.setDrawCircles(true);
+                    lineDataSetAcomuladoAlerta4.setCircleColor(Color.rgb(254, 0, 0));
+                    lineDataSetAcomuladoAlerta4.setCircleRadius(8f);
+                    lineDataSetAcomuladoAlerta4.setDrawCircleHole(false);
+                    lineDataSetAcomuladoAlerta4.setLineWidth(0f);
+                    lineDataSetAcomuladoAlerta4.setColor(Color.rgb(254, 93, 64));
+                    lineDataSetAcomuladoAlerta4.setValueTextSize(0f);
+                    lineDataSetAcomuladoAlerta4.setValueTextColor(Color.BLACK);
+                    lineDataSetAcomuladoAlerta4.setAxisDependency(YAxis.AxisDependency.LEFT);
+                    lineDataSets.add(lineDataSetAcomuladoAlerta4);
                 }if(validarAdultoAdulto == false) {
-                    lineDataSetAcomuladoAlerta.setDrawCircles(true);
-                    lineDataSetAcomuladoAlerta.setCircleColor(Color.rgb(254, 0, 0));
-                    lineDataSetAcomuladoAlerta.setCircleRadius(8f);
-                    lineDataSetAcomuladoAlerta.setDrawCircleHole(false);
-                    lineDataSetAcomuladoAlerta.setLineWidth(0f);
-                    lineDataSetAcomuladoAlerta.setColor(Color.rgb(254, 93, 64));
-                    lineDataSetAcomuladoAlerta.setValueTextSize(0f);
-                    lineDataSetAcomuladoAlerta.setValueTextColor(Color.BLACK);
-                    lineDataSetAcomuladoAlerta.setAxisDependency(YAxis.AxisDependency.LEFT);
-                    lineDataSets.add(lineDataSetAcomuladoAlerta);
+                    lineDataSetAcomuladoAlerta5.setDrawCircles(true);
+                    lineDataSetAcomuladoAlerta5.setCircleColor(Color.rgb(254, 0, 0));
+                    lineDataSetAcomuladoAlerta5.setCircleRadius(8f);
+                    lineDataSetAcomuladoAlerta5.setDrawCircleHole(false);
+                    lineDataSetAcomuladoAlerta5.setLineWidth(0f);
+                    lineDataSetAcomuladoAlerta5.setColor(Color.rgb(254, 93, 64));
+                    lineDataSetAcomuladoAlerta5.setValueTextSize(0f);
+                    lineDataSetAcomuladoAlerta5.setValueTextColor(Color.BLACK);
+                    lineDataSetAcomuladoAlerta5.setAxisDependency(YAxis.AxisDependency.LEFT);
+                    lineDataSets.add(lineDataSetAcomuladoAlerta5);
                 }
-
-
-
-
-
-
-
-
-
 
 
                 datos = new LineData(lineDataSets);

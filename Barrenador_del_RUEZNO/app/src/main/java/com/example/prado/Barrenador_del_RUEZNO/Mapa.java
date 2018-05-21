@@ -281,7 +281,7 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
             super.onPostExecute(result);
             if (result != null) {
                 if (filtro == 1) {
-                    Toast.makeText(Mapa.this, "Carga completada existen " + result.size() + " Barrenador_del_RUEZNO en " + spiner_EDO.getSelectedItem().toString(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Mapa.this, "Carga completada existen " + result.size() + " estaciones en " + spiner_EDO.getSelectedItem().toString(), Toast.LENGTH_SHORT).show();
                     progressDialog1.dismiss();
                     if (!result.isEmpty()) {
                         for (int i = 0; i < result.size(); i++) {
@@ -292,7 +292,7 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
                     }
                 }
                 if (filtro == 2) {
-                    Toast.makeText(Mapa.this, "Carga completada existen " + result.size() + " Barrenador_del_RUEZNO en " + spiner_MPIO.getSelectedItem().toString(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Mapa.this, "Carga completada existen " + result.size() + " estaciones en " + spiner_MPIO.getSelectedItem().toString(), Toast.LENGTH_SHORT).show();
                     progressDialog1.dismiss();
                     if (!result.isEmpty()) {
                         for (int i = 0; i < result.size(); i++) {
