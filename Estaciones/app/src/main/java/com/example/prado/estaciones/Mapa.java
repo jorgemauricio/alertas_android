@@ -17,6 +17,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -60,15 +61,21 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
     private Spinner spiner_EDO;
     private Spinner spiner_MPIO;
     private ImageButton actualizar;
-    String Municipio = "";
+    String Municipio = "", arreglomun = "";
     int filtro = 0;
     private boolean autoriza;
     private long tiempoPrimerClick;
     private ArrayList NumerosEstacion = new ArrayList();
+    private ArrayList<Estaciones>estaciones = new ArrayList<Estaciones>();
     ConnectivityManager cm;
     NetworkInfo ni;
-    boolean WiFI = false;
-    boolean MoviL = false;
+    private boolean WiFI = false;
+    private boolean MoviL = false;
+    private int idEstado = 8;
+    ProgressDialog progressDialog;
+    private String MuniciopioId;
+    private String[] municipioID = {"0"};
+    private int aux;
 
 
     @Override
@@ -92,20 +99,17 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
         anuncio = (TextView)findViewById(R.id.advertencia);
         anuncio.setVisibility(View.INVISIBLE);
 
-
+        new JSONTaskMun().execute(URL(2,8));
         spiner_MPIO.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
 
                 mMap.clear();
 
-                ProgressDialog progressDialog = new ProgressDialog(Mapa.this);
-                progressDialog.setIndeterminate(true);
-                progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                progressDialog.setMessage("Descargando información...");
+
                 if (spiner_MPIO.getSelectedItemPosition() == 0){
                     filtro = 1;
-                    new JSONTask(progressDialog).execute(URL());
+                    new JSONTask(Progreso()).execute(URL(1,8));
                 }
                 if (spiner_MPIO.getSelectedItemPosition() != 0) {
                     filtro = 2;
@@ -113,7 +117,7 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
                     Municipio = spiner_MPIO.getSelectedItem().toString();
                     if (WiFI != false || MoviL != false) {
 
-                        new JSONTask(progressDialog).execute(URL());
+                        new JSONTask(Progreso()).execute(URL(1, 8));
                     }
                 }
 
@@ -169,7 +173,11 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
         edo();
 
         if (autoriza) {
-            municipios();
+            ProgressDialog progressDialog = new ProgressDialog(Mapa.this);
+            progressDialog.setIndeterminate(true);
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setMessage("Descargando información...");
+            new JSONTask(progressDialog).execute(URL(1, 8), URL(2, 8));
         }
 
         filtro = 1;
@@ -188,10 +196,10 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
         //***
     }
 
+
     //Proceso realizado en segundo plano, descarga de servicio web
     public class JSONTask extends AsyncTask<String, String, List<DatosEstaciones>> {
         private final ProgressDialog progressDialog1;
-        int au;
 
         JSONTask(ProgressDialog progressDialog){
             this.progressDialog1 = progressDialog;
@@ -209,59 +217,65 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
 
             try {
 
-                URL url = new URL(param[0]);
-                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.connect();
+                URL urledo = new URL(param[0]);
 
-                InputStream in = urlConnection.getInputStream();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-                StringBuffer buffer = new StringBuffer();
+                HttpURLConnection urlConnectionedo = (HttpURLConnection) urledo.openConnection();
+                urlConnectionedo.connect();
 
-                String lineas = "";
+                InputStream inedo = urlConnectionedo.getInputStream();
+
+                BufferedReader readeredo = new BufferedReader(new InputStreamReader(inedo));
+                StringBuffer bufferedo = new StringBuffer();
+
+                String lineasedo = "";
 
                 //Recorre línea por línea de lo encontrado en la página
-                while ((lineas = reader.readLine()) != null) {
-                    buffer.append(lineas);
+                while ((lineasedo = readeredo.readLine()) != null) {
+                    bufferedo.append(lineasedo);
                 }
 
-                String finaljson = buffer.toString();
-                JSONObject jsonObject = new JSONObject(finaljson);
-                JSONArray jsonArray = jsonObject.getJSONArray("estado");
-                JSONObject objetofinal;
+                String finaljsonedo = bufferedo.toString();
+                JSONObject jsonObjectedo = new JSONObject(finaljsonedo);
+                JSONArray jsonArrayedo = jsonObjectedo.getJSONArray("est");
+                JSONObject objetofinaledo;
 
                 ArrayList<DatosEstaciones> listdatosEstaciones = new ArrayList<DatosEstaciones>();
 
                 if (filtro == 1) {
                     //Ciclo que obtiene los parametros deseados y llena una lista con ellos
-                    for (int i = 0; i < jsonArray.length(); i++) {
-                        objetofinal = jsonArray.getJSONObject(i);
+                    for (int i = 0; i < jsonArrayedo.length(); i++) {
+                        objetofinaledo = jsonArrayedo.getJSONObject(i);
                         listdatosEstaciones.add(
                                 new DatosEstaciones
-                                        (objetofinal.getString("Nombre"),
-                                                objetofinal.getDouble("latitud"),
-                                                objetofinal.getDouble("longitud"),
-                                                objetofinal.getInt("Numero")));
+                                        (objetofinaledo.getString("Nombre"),
+                                                objetofinaledo.getDouble("Latitud"),
+                                                objetofinaledo.getDouble("Longitud"),
+                                                objetofinaledo.getInt("Numero")));
                     }
                     return listdatosEstaciones;
 
                 } else if (filtro == 2) {
-
-                    for (int i = 0; i < jsonArray.length(); i++) {
-                        objetofinal = jsonArray.getJSONObject(i);
-                        //Chihuahua au = 199
-                        if (spiner_MPIO.getSelectedItemPosition() != 1 && spiner_MPIO.getSelectedItemPosition() != 0) {
-                            au = spiner_MPIO.getSelectedItemPosition() + 198;
-                        } else {
-                            au = 199;
+                    for (int j = 0; j < estaciones.size(); j++){
+                        System.out.println("Datos de objeto "+estaciones.get(j).getNombre().toString());
+                        String objetoestaciones = estaciones.get(j).getNombre().toString();
+                        String varSpinerMun = spiner_MPIO.getSelectedItem().toString();
+                        if (varSpinerMun.equals(objetoestaciones)){
+                            aux = estaciones.get(j).getIndice();
                         }
-                        if (objetofinal.getInt("municipioid") == au) {
+                    }
+
+                    for (int i = 0; i < jsonArrayedo.length(); i++) {
+                        objetofinaledo = jsonArrayedo.getJSONObject(i);
+
+                        if (objetofinaledo.getInt("MunicipioId") ==  aux) {
                             listdatosEstaciones.add(
                                     new DatosEstaciones
-                                            (objetofinal.getString("Nombre"),
-                                                    objetofinal.getDouble("latitud"),
-                                                    objetofinal.getDouble("longitud"),
-                                                    objetofinal.getInt("Numero")));
+                                            (objetofinaledo.getString("Nombre"),
+                                                    objetofinaledo.getDouble("Latitud"),
+                                                    objetofinaledo.getDouble("Longitud"),
+                                                    objetofinaledo.getInt("Numero")));
                         }
+
                     }
                     return listdatosEstaciones;
                     ///////////////////*******
@@ -310,6 +324,66 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
         }
     }
 
+public class JSONTaskMun extends AsyncTask<String,String,String[]> {
+
+    @Override
+    protected String[] doInBackground(String... param) {
+
+        try {
+
+            URL urlmun = new URL(param[0]);
+
+            HttpURLConnection urlConnectionmun = (HttpURLConnection) urlmun.openConnection();
+
+            urlConnectionmun.connect();
+
+            InputStream inmun = urlConnectionmun.getInputStream();
+
+            BufferedReader reademun = new BufferedReader(new InputStreamReader(inmun));
+            StringBuffer buffermun = new StringBuffer();
+
+            String lineamun = "";
+
+            //Recorre línea por línea de lo encontrado en la página
+            while ((lineamun = reademun.readLine()) != null) {
+                buffermun.append(lineamun);
+            }
+
+            String finaljsonmun = buffermun.toString();
+            JSONObject jsonObjectmun = new JSONObject(finaljsonmun);
+            JSONArray jsonArraymun = jsonObjectmun.getJSONArray("municipios");
+            JSONObject objetofinalmun;
+
+
+            for (int i = 0; i < jsonArraymun.length(); i++) {
+                objetofinalmun = jsonArraymun.getJSONObject(i);
+                arreglomun += objetofinalmun.getString("Nombre") + "\n";
+                estaciones.add(new Estaciones
+                        (objetofinalmun.getString("Nombre"),objetofinalmun.getInt("Indice")));
+
+            }
+            String[] municipio = arreglomun.split("\n");
+            return municipio;
+
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        } catch (JSONException e1) {
+            e1.printStackTrace();
+        }
+        return null;
+        ///////////////////*******
+    }
+
+    @Override
+    protected void onPostExecute(String[] s) {
+        super.onPostExecute(s);
+        adaptadorspiners(s);
+
+    }
+}
+
+
+
     public void edo() {
 
             //Chihuahua
@@ -331,10 +405,13 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
 
     }
 
-    private String URL() {
-
-            return "http://pdiarios.alcohomeapp.com.mx/8.json";
-
+    private String URL(int url, int valor) {
+        if (url == 1) {
+            return "http://clima.inifap.gob.mx/wapi/api/Estacion?idEstado=" + valor;
+        }if (url == 2){
+            return "http://clima.inifap.gob.mx/wapi/api/Estacion?idEst=" + valor;
+        }
+        return null;
     }
 
     private void LlenarSpineredo() {
@@ -344,82 +421,6 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.item_estilo_spiner_mapa, Edos);
         spiner_EDO.setAdapter(adapter);
-    }
-
-    private void municipios() {
-
-                String[] municipio8 = {
-                        "Municipios",
-                        "Ahumada",
-                        "Aldama",
-                        "Allende",
-                        "Aquiles Serdán",
-                        "Ascensión",
-                        "Bachíniva",
-                        "Balleza",
-                        "Batopilas",
-                        "Bocoyna",
-                        "Buenaventura",
-                        "Camargo",
-                        "Carichí",
-                        "Casas Grandes",
-                        "Chihuahua",
-                        "Chínipas",
-                        "Coronado",
-                        "Coyame del Sotol",
-                        "Cuauhtémoc",
-                        "Cusihuiriachi",
-                        "Delicias",
-                        "Dr. Belisario Domínguez",
-                        "El Tule",
-                        "Galeana",
-                        "Gómez Farías",
-                        "Gran Morelos",
-                        "Guachochi",
-                        "Guadalupe",
-                        "Guadalupe y Calvo",
-                        "Guazapares",
-                        "Guerrero",
-                        "Hidalgo del Parral",
-                        "Huejotitán",
-                        "Ignacio Zaragoza",
-                        "Janos",
-                        "Jiménez",
-                        "Juárez",
-                        "Julimes",
-                        "La Cruz",
-                        "López",
-                        "Madera",
-                        "Maguarichi",
-                        "Manuel Benavides",
-                        "Matachí",
-                        "Matamoros",
-                        "Meoqui",
-                        "Morelos",
-                        "Moris",
-                        "Namiquipa",
-                        "Nonoava",
-                        "Nuevo Casas Grandes",
-                        "Ocampo",
-                        "Ojinaga",
-                        "Praxedis G. Guerrero",
-                        "Riva Palacio",
-                        "Rosales",
-                        "Rosario",
-                        "San Francisco de Borja",
-                        "San Francisco de Conchos",
-                        "San Francisco del Oro",
-                        "Santa Bárbara",
-                        "Santa Isabel",
-                        "Satevó",
-                        "Saucillo",
-                        "Temósachi",
-                        "Urique",
-                        "Uruachi",
-                        "Valle de Zaragoz"
-                };
-                adaptadorspiners(municipio8);
-
     }
 
     //Método para cargar la cadena de información a los objetos spinner
@@ -436,12 +437,7 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
                 if (respuestaPermiso[0] == PackageManager.PERMISSION_GRANTED){
                     anuncio.setVisibility(View.INVISIBLE);
                     autoriza = true;
-                    municipios();
-                    ProgressDialog progressDialog = new ProgressDialog(Mapa.this);
-                    progressDialog.setIndeterminate(true);
-                    progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                    progressDialog.setMessage("Descargando información...");
-                    new JSONTask(progressDialog).execute(URL());
+                    new JSONTask(Progreso()).execute(URL(1, 8), URL(2, 8));
                 }else{
                     anuncio.setVisibility(View.VISIBLE);
                     autoriza = false;
@@ -490,18 +486,17 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
             }
             if (Mobile.isConnected()) {
                 MoviL = true;
-                Toast.makeText(this, "Conectado a red Móvil", Toast.LENGTH_SHORT).show();            }
+                Toast.makeText(this, "Conectado a red Móvil", Toast.LENGTH_SHORT).show();
+            }
 
             if (WiFI != false || MoviL != false){
-                ProgressDialog progressDialog = new ProgressDialog(Mapa.this);
-                progressDialog.setIndeterminate(true);
-                progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                progressDialog.setMessage("Descargando información...");
+
+
                 if (spiner_MPIO.getSelectedItemPosition() == 0){
                     filtro = 1;
-                    new JSONTask(progressDialog).execute(URL());
+                    new JSONTask(Progreso()).execute(URL(1, 8), URL(2, 8));
                 }
-                new JSONTask(progressDialog).execute(URL());
+                new JSONTask(Progreso()).execute(URL(1, 8), URL(2, 8));
 
             }
 
@@ -511,4 +506,13 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
             Toast.makeText(this, "No tienes conexión a internet", Toast.LENGTH_SHORT).show();
         }
     }
+    //Ejecuta la animación de progreso de descarga de JSON
+    private ProgressDialog Progreso(){
+        progressDialog = new ProgressDialog(Mapa.this);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setMessage("Descargando información...");
+        return progressDialog;
+    }
+
 }
