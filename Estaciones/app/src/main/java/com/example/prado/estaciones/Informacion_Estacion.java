@@ -182,7 +182,7 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
 
         try {
             // nombre y ruta de la imagen a incluir
-            String mPath = Environment.getExternalStorageDirectory().toString() + File.separator + Carpeta + "Captura.png";
+            String mPath = Environment.getExternalStorageDirectory().toString() + File.separator + Carpeta + "Alerta.png";
 
             File imageFile = new File(mPath);
 
@@ -423,9 +423,9 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
                 lineChart.animateX( 2000);
                 //Cargar eje X
                 lineChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
-                lineChart.getXAxis().setLabelRotationAngle(-90f);
+                lineChart.getXAxis().setLabelRotationAngle(-80f);
                 lineChart.getXAxis().setGranularity(1f);
-                lineChart.getXAxis().setDrawAxisLine(true);
+                lineChart.getXAxis().setDrawAxisLine(false);
                 lineChart.getXAxis().setValueFormatter(new IndexAxisValueFormatter(valoresX));
                 progressDialog.dismiss();
 
@@ -469,8 +469,8 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
         NombreEstacion = NombreEstacion.replace(" ","_");
         String NombreArchivo = NombreEstacion + "_Datos_UC_" + DiaI + "-" + MesI + "-" + AnioI + "_" + DiaF + "-" + MesF + "-" + AnioF + ".csv";
         String path = Environment.getExternalStorageDirectory() + File.separator + Ruta_Imagen + File.separator + NombreArchivo;
-        String pathG = Environment.getExternalStorageDirectory() + File.separator + Carpeta + File.separator + "Grafica_prueba.png";
-        String pathC = Environment.getExternalStorageDirectory() + File.separator + Carpeta + File.separator + "Captura.png";
+        String pathG = Environment.getExternalStorageDirectory() + File.separator + Carpeta + File.separator + "Gráfica.png";
+        String pathC = Environment.getExternalStorageDirectory() + File.separator + Carpeta + File.separator + "Alerta.png";
         ArrayList<Uri> archivosCarga = new ArrayList<Uri>();
 
         File fileWithinMyDir = new File(path);
@@ -517,7 +517,7 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
             FileOutputStream fos = new FileOutputStream(ruta);
             fos.write(CSV.getBytes());
             fos.close();
-            lineChart.saveToPath("Grafica_prueba", File.separator + Carpeta);
+            lineChart.saveToPath("Gráfica", File.separator + Carpeta);
         } catch (IOException e) {
             e.printStackTrace();
         }

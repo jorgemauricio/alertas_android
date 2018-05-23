@@ -62,7 +62,7 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
     private Spinner spiner_MPIO;
     private ImageButton actualizar;
     String Municipio = "", arreglomun = "";
-    int filtro = 0;
+    int filtro = 2;
     private boolean autoriza;
     private long tiempoPrimerClick;
     private ArrayList NumerosEstacion = new ArrayList();
@@ -104,21 +104,11 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
 
-                mMap.clear();
-
-
-                if (spiner_MPIO.getSelectedItemPosition() == 0){
-                    filtro = 1;
-                    new JSONTask(Progreso()).execute(URL(1,8));
-                }
-                if (spiner_MPIO.getSelectedItemPosition() != 0) {
-                    filtro = 2;
                     mMap.clear();
                     Municipio = spiner_MPIO.getSelectedItem().toString();
                     if (WiFI != false || MoviL != false) {
 
                         new JSONTask(Progreso()).execute(URL(1, 8));
-                    }
                 }
 
             }
@@ -138,10 +128,6 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
             }
         });
 
-
-
-
-
         //** Pide permiso de manipulación de archivos del usuario.
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED){
@@ -149,7 +135,6 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
             requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},1000);
         }else {
             autoriza = true;
-            conexion();
         }
         //**
         actualizar.setOnClickListener(new View.OnClickListener() {
@@ -167,20 +152,15 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
         mMap = googleMap;
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
-        String[] inicio = {"Municipios"};
-        adaptadorspiners(inicio);
         LlenarSpineredo();
         edo();
 
         if (autoriza) {
-            ProgressDialog progressDialog = new ProgressDialog(Mapa.this);
-            progressDialog.setIndeterminate(true);
-            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            progressDialog.setMessage("Descargando información...");
-            new JSONTask(progressDialog).execute(URL(1, 8), URL(2, 8));
+
+            new JSONTask(Progreso()).execute(URL(1, 8), URL(2, 8));
         }
 
-        filtro = 1;
+
 
         //Extrae el nombre del marcador seleccionado y cambia de activity
         mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
@@ -324,7 +304,7 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
         }
     }
 
-public class JSONTaskMun extends AsyncTask<String,String,String[]> {
+    public class JSONTaskMun extends AsyncTask<String,String,String[]> {
 
     @Override
     protected String[] doInBackground(String... param) {
@@ -382,8 +362,6 @@ public class JSONTaskMun extends AsyncTask<String,String,String[]> {
     }
 }
 
-
-
     public void edo() {
 
             //Chihuahua
@@ -422,13 +400,11 @@ public class JSONTaskMun extends AsyncTask<String,String,String[]> {
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.item_estilo_spiner_mapa, Edos);
         spiner_EDO.setAdapter(adapter);
     }
-
     //Método para cargar la cadena de información a los objetos spinner
     private void adaptadorspiners(String[] vector) {
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.item_estilo_spiner_mapa, vector);
         spiner_MPIO.setAdapter(adapter);
     }
-
     //Método para comparar la respuesta al permiso solicitado
     @Override
     public void onRequestPermissionsResult(int codigopermiso, @NonNull String[] permiso, @NonNull int[] respuestaPermiso){
@@ -446,7 +422,6 @@ public class JSONTaskMun extends AsyncTask<String,String,String[]> {
                 break;
         }
     }
-
     //Método para salir de la aplicación precionando dos veces atras
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
@@ -492,11 +467,7 @@ public class JSONTaskMun extends AsyncTask<String,String,String[]> {
             if (WiFI != false || MoviL != false){
 
 
-                if (spiner_MPIO.getSelectedItemPosition() == 0){
-                    filtro = 1;
-                    new JSONTask(Progreso()).execute(URL(1, 8), URL(2, 8));
-                }
-                new JSONTask(Progreso()).execute(URL(1, 8), URL(2, 8));
+                new JSONTask(Progreso()).execute(URL(1, 8));
 
             }
 
