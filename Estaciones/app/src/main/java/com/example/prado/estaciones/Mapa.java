@@ -103,14 +103,8 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
         spiner_MPIO.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-
                     mMap.clear();
-                    Municipio = spiner_MPIO.getSelectedItem().toString();
-                    if (WiFI != false || MoviL != false) {
-
                         new JSONTask(Progreso()).execute(URL(1, 8));
-                }
-
             }
 
             @Override
