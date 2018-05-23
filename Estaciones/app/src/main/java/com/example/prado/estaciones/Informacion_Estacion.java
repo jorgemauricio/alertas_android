@@ -24,6 +24,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.XAxis;
@@ -55,10 +57,12 @@ import java.util.List;
 public class Informacion_Estacion extends AppCompatActivity implements View.OnClickListener {
 
     //Declaración de variable para Gráfica Lineal
+    private FloatingActionButton nuevo;
+    private FloatingActionsMenu Grupo;
     private LineChart lineChart;
     private ImageView Compartir;
     boolean validar = true;
-    private Button Cargar, Nuevo;
+    private Button Cargar;
     private TextView FechaI, FechaF;
     private TextView cerrar,InformacionAlerta,Alerta;
     final Calendar calendar = Calendar.getInstance();
@@ -84,27 +88,29 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
     private View cuadroalerta,FondoAlertaEstacion;
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+       // setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_informacion__estacion);
 
         lineChart = (LineChart) findViewById(R.id.GraficaLineal);
         Cargar = (Button) findViewById(R.id.BuscarFechas);
-        Nuevo = (Button) findViewById(R.id.Nuevo);
-        Nuevo.setVisibility(View.INVISIBLE);
         FechaI = (TextView) findViewById(R.id.FechaI);
         FechaF = (TextView) findViewById(R.id.FechaF);
         Cargar.setOnClickListener(this);
-        Nuevo.setOnClickListener(this);
         FechaI.setOnClickListener(this);
         FechaF.setOnClickListener(this);
         lineChart.setNoDataText("Sin datos para mostrar");
         dialog = new Dialog(this);
         FondoAlertaEstacion = (View)findViewById(R.id.FondoInformacionEstacion);
+        nuevo = (FloatingActionButton) findViewById(R.id.NuevaConsulta);
+        nuevo.setOnClickListener(this);
+        Grupo = (FloatingActionsMenu) findViewById(R.id.grupofloat);
+        Grupo.setOnClickListener(this);
 
 
 
@@ -263,6 +269,7 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
                         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
                         progressDialog.setMessage("Descargando información...");
                         new JSONTaskUC(progressDialog).execute(URL);
+                        Grupo.setVisibility(View.VISIBLE);
                         OcultarP();
                     }
                 } else {
@@ -272,7 +279,7 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
                 Toast.makeText(Informacion_Estacion.this, "Ingresa una fecha Inicial", Toast.LENGTH_SHORT).show();
             }
         }
-        if (v == Nuevo) {
+        if (v == nuevo) {
             finish();
             startActivity(getIntent());
         }
@@ -423,7 +430,7 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
                 lineChart.animateX( 2000);
                 //Cargar eje X
                 lineChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
-                lineChart.getXAxis().setLabelRotationAngle(-80f);
+                lineChart.getXAxis().setLabelRotationAngle(0f);
                 lineChart.getXAxis().setGranularity(1f);
                 lineChart.getXAxis().setDrawAxisLine(false);
                 lineChart.getXAxis().setValueFormatter(new IndexAxisValueFormatter(valoresX));
@@ -433,6 +440,7 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
 
 
                 lineChart.invalidate();
+                lineChart.fitScreen();
 
 
             } else {
@@ -461,7 +469,6 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
         Cargar.setVisibility(View.INVISIBLE);
         FechaI.setVisibility(View.INVISIBLE);
         FechaF.setVisibility(View.INVISIBLE);
-        Nuevo.setVisibility(View.VISIBLE);
     }
 
     @SuppressLint("ResourceType")

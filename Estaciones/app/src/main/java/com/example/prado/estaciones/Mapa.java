@@ -83,7 +83,7 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
         super.onCreate(savedInstanceState);
         //** Pantalla completa
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        //setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         //**
 
@@ -460,7 +460,7 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
 
             if (WiFI != false || MoviL != false){
 
-
+                new JSONTaskMun().execute(URL(2,8));
                 new JSONTask(Progreso()).execute(URL(1, 8));
 
             }
