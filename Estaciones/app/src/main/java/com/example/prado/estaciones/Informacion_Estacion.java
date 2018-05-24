@@ -57,7 +57,7 @@ import java.util.List;
 public class Informacion_Estacion extends AppCompatActivity implements View.OnClickListener {
 
     //Declaración de variable para Gráfica Lineal
-    private FloatingActionButton nuevo;
+    private FloatingActionButton nuevo, Pronostico;
     private FloatingActionsMenu Grupo;
     private LineChart lineChart;
     private ImageView Compartir;
@@ -70,7 +70,7 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
     private LineData datos;
     private int DiaI, MesI, AnioI, DiaF, MesF, AnioF;
     private String CSV = "Fecha,Tmax,Tmin,UCD,UCA\n";
-    private double UC = 0;
+    private double UC = 0, Promedio = 0;
     private float posX = 0, posY = 0;
     private String nombre,NombreEstacion;
     private ArrayList<String> DatosEnEjeX = new ArrayList<>();
@@ -84,7 +84,7 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
     private final String Carpeta = "UnidadesCalor/", Ruta_Imagen =Carpeta+"UC";
     private Dialog dialog;
     private String fecpop;
-    private int UCApop;
+    private int UCApop,UCApop1;
     private View cuadroalerta,FondoAlertaEstacion;
 
 
@@ -111,6 +111,8 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
         nuevo.setOnClickListener(this);
         Grupo = (FloatingActionsMenu) findViewById(R.id.grupofloat);
         Grupo.setOnClickListener(this);
+        Pronostico = (FloatingActionButton) findViewById(R.id.Pronostico);
+        Pronostico.setOnClickListener(this);
 
 
 
@@ -126,7 +128,7 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
                 float y = e.getY();
 
                 if (x == posX && y == posY) {
-                   Alerta();
+                   Alerta(1);
                     lineChart.fitScreen();
 
                 }
@@ -139,7 +141,7 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
 
     }
 
-    public void Alerta(){
+    public void Alerta(int num){
         dialog.setContentView(R.layout.alerta_view);
 
         Alerta = (TextView) dialog.findViewById(R.id.Alerta);
@@ -151,14 +153,22 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
 
 
         Alerta.setText("Alerta");
-        InformacionAlerta.setText(
-                "Estación: "+ NombreEstacion.replace("_", " ") + "\n\n" +
-                "Fecha de alerta: " + fecpop + "\n\n" +
-                "UCA a la fecha: " + String.valueOf(UCApop) + " UC" + "\n\n" +
-                "Fase biológica estimada: Pupa" + "\n\n" +
-                "Areas de influencia: 5 km de radio" + "\n\n" +
-                "Recomendación: Método de control químico");
-
+        if(num == 1) {
+            InformacionAlerta.setText(
+                    "Estación: " + NombreEstacion.replace("_", " ") + "\n\n" +
+                            "Fecha de alerta: " + fecpop + "\n\n" +
+                            "UCA a la fecha: " + String.valueOf(UCApop) + " UC" + "\n\n" +
+                            "Fase biológica estimada: Pupa" + "\n\n" +
+                            "Areas de influencia: 5 km de radio" + "\n\n" +
+                            "Recomendación: Método de control químico" + "\n\n");
+        }if (num == 2){
+            InformacionAlerta.setText(
+                    "Al día " + FechaF.getText().toString() + " \n\nSe han acumulado " + UCApop1 +
+                            " UC\n\nEn la estación " + NombreEstacion.replace("_"," ") + "\n\n" +
+                    "Acumulación diaria promedio: "+ Promedio + " UC\n\n" +
+                    "Se estiman " + Ndias(UCApop1) + " días para llegar a la fase de pupa \n\n" +
+                    "Periodo de consulta: \n" + FechaI.getText().toString() + " al " + FechaF.getText().toString());
+        }
 
         cerrar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -283,6 +293,9 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
             finish();
             startActivity(getIntent());
         }
+        if (v == Pronostico){
+            Alerta(2);
+        }
     }
 
     public class JSONTaskUC extends AsyncTask<String, String, List<UnidadesCalor>> {
@@ -356,27 +369,29 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
         protected void onPostExecute(List<UnidadesCalor> result) {
             super.onPostExecute(result);
             if (result != null) {
-                double acomulado = 0;
+                double acumulado = 0;
 
                 for (int i = 0; i < result.size(); i++) {
-                    acomulado += UnidadesCalor(result.get(i).getTmax(), result.get(i).getTmin());
+                    acumulado += UnidadesCalor(result.get(i).getTmax(), result.get(i).getTmin());
                     DatosEnEjeY.add(new Entry(i, (float) UnidadesCalor(result.get(i).getTmax(), result.get(i).getTmin())));
-                    AcumuladoEnEjeY.add(new Entry(i , (float) acomulado));
+                    AcumuladoEnEjeY.add(new Entry(i , (float) acumulado));
                     valoresX.add(result.get(i).getFecha());
 
-                    if(acomulado >= 1019 && validar) {
-                        AcumuladoEnEjeYAlerta.add(new Entry(i, (float) acomulado));
+                    if(acumulado >= 1019 && validar) {
+                        AcumuladoEnEjeYAlerta.add(new Entry(i, (float) acumulado));
                         posX = AcumuladoEnEjeYAlerta.get(0).getX();
                         System.out.println("Posición en X: " + posX);
                         posY = AcumuladoEnEjeYAlerta.get(0).getY();
                         System.out.println("Posición en Y: " + posY);
                         fecpop = result.get(i).getFecha();
-                        UCApop = (int) acomulado;
+                        UCApop = (int) acumulado;
                         validar = false;
-
-
+                        Pronostico.setVisibility(View.INVISIBLE);
+                        Pronostico.setEnabled(false);
                     }
-                    CSV += result.get(i).getFecha() + "," + result.get(i).getTmax() + "," + result.get(i).getTmin() + "," + UnidadesCalor(result.get(i).getTmax(), result.get(i).getTmin()) +","+ acomulado +"\n";
+                    Promedio = UCP(result.size());
+                    UCApop1 = (int)acumulado;
+                    CSV += result.get(i).getFecha() + "," + result.get(i).getTmax() + "," + result.get(i).getTmin() + "," + UnidadesCalor(result.get(i).getTmax(), result.get(i).getTmin()) +","+ acumulado +"\n";
                 }
 
                 LineDataSet lineDataSetAcomulado = new LineDataSet(AcumuladoEnEjeY,"UCDA");
@@ -531,5 +546,18 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
 
     }
 
+
+    private Double UCP(int vDias){
+       double UCP;
+       return UCP = UCApop1 / vDias;
+    }
+    private int Ndias(int UCacumuladas){
+        int  Prediccion = 0;
+        while(UCacumuladas <1019){
+            Prediccion += 1;
+            UCacumuladas += Promedio;
+        }
+        return Prediccion;
+    }
 
 }

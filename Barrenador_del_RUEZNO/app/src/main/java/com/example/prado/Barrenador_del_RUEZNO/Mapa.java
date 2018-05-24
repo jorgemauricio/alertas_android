@@ -50,13 +50,14 @@ import java.util.List;
 
 public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
 
+    //Declaración de variables globales.
     private GoogleMap mMap;
     public TextView anuncio;
     private LatLng coordenadas;
     private Spinner spiner_EDO;
     private Spinner spiner_MPIO;
     private ImageButton actualizar;
-    String Municipio = "", arreglomun = "";
+    String arreglomun = "";
     int filtro = 2;
     private boolean autoriza;
     private long tiempoPrimerClick;
@@ -66,7 +67,7 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
     NetworkInfo ni;
     private boolean WiFI = false;
     private boolean MoviL = false;
-    private int idEstado = 8;
+    private int cont = 0;
     ProgressDialog progressDialog;
     private String MuniciopioId;
     private String[] municipioID = {"0"};
@@ -78,7 +79,7 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
         super.onCreate(savedInstanceState);
         //** Pantalla completa
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        //setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         //**
 
@@ -98,9 +99,12 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
         spiner_MPIO.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                mMap.clear();
-                    new JSONTask(Progreso()).execute(URL(1, 8));
+                if (cont == 1) {
+                    mMap.clear();
                 }
+                cont = 1;
+                new JSONTask(Progreso()).execute(URL(1, 8));
+            }
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
@@ -164,6 +168,8 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
         });
         //***
     }
+
+
     //Proceso realizado en segundo plano, descarga de servicio web
     public class JSONTask extends AsyncTask<String, String, List<DatosEstaciones>> {
         private final ProgressDialog progressDialog1;
@@ -453,7 +459,7 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
 
             if (WiFI != false || MoviL != false){
 
-
+                new JSONTaskMun().execute(URL(2,8));
                 new JSONTask(Progreso()).execute(URL(1, 8));
 
             }

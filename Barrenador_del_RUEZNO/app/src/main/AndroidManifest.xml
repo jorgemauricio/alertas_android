@@ -17,15 +17,18 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/Ruezno"/>
 
-        <activity android:name="com.example.prado.Barrenador_del_RUEZNO.Inicio">
+        <activity android:name="com.example.prado.Barrenador_del_RUEZNO.Inicio"
+            android:configChanges="orientation|screenSize">
             <intent-filter>
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LAUNCHER" />
         </intent-filter>
         </activity>
-        <activity android:name="com.example.prado.Barrenador_del_RUEZNO.Mapa">
+        <activity android:name="com.example.prado.Barrenador_del_RUEZNO.Mapa"
+            android:configChanges="orientation|screenSize">
         </activity>
-        <activity android:name="com.example.prado.Barrenador_del_RUEZNO.Informacion_Estacion"></activity>
+        <activity android:name="com.example.prado.Barrenador_del_RUEZNO.Informacion_Estacion"
+            android:configChanges="orientation|screenSize"></activity>
 
         <provider
             android:name="com.example.prado.Barrenador_del_RUEZNO.GenericFileProvider"

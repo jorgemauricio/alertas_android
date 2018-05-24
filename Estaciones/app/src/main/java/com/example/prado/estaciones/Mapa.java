@@ -61,7 +61,7 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
     private Spinner spiner_EDO;
     private Spinner spiner_MPIO;
     private ImageButton actualizar;
-    String Municipio = "", arreglomun = "";
+    String arreglomun = "";
     int filtro = 2;
     private boolean autoriza;
     private long tiempoPrimerClick;
@@ -71,7 +71,7 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
     NetworkInfo ni;
     private boolean WiFI = false;
     private boolean MoviL = false;
-    private int idEstado = 8;
+    private int cont = 0;
     ProgressDialog progressDialog;
     private String MuniciopioId;
     private String[] municipioID = {"0"};
@@ -103,7 +103,10 @@ public class Mapa extends AppCompatActivity implements OnMapReadyCallback {
         spiner_MPIO.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if (cont == 1) {
                     mMap.clear();
+                }
+                cont = 1;
                         new JSONTask(Progreso()).execute(URL(1, 8));
             }
 

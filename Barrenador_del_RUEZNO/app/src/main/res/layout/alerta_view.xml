@@ -46,7 +46,6 @@
         app:layout_constraintStart_toStartOf="parent" />
 
 
-
     <ImageView
         android:id="@+id/Compartir"
         android:layout_width="wrap_content"
@@ -60,7 +59,7 @@
 
     <ScrollView
         android:layout_width="284dp"
-        android:layout_height="225dp"
+        android:layout_height="240dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginLeft="8dp"
@@ -71,8 +70,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.504">
+        app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -97,5 +95,6 @@
 
         </LinearLayout>
     </ScrollView>
+
 
 </android.support.constraint.ConstraintLayout>
