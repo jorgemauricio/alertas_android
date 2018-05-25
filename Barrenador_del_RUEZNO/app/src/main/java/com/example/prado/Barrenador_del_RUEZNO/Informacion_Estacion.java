@@ -59,11 +59,11 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
     private FloatingActionsMenu Grupo;
     private LineChart lineChart;
     private ImageView Compartir;
-    boolean validar1 = true,validar2 = false,validar3 = false,validar4 = false,validar5 = false;
+    private boolean validar1 = true,validar2 = true,validar3 = true,validar4 = true,validar5 = true;
     private Button Cargar;
     private TextView FechaI, FechaF;
     private TextView cerrar,InformacionAlerta,Alerta;
-    final Calendar calendar = Calendar.getInstance();
+    private final Calendar calendar = Calendar.getInstance();
     private LineDataSet lineDataSet;
     private LineData datos;
     private int DiaI, MesI, AnioI, DiaF, MesF, AnioF;
@@ -74,7 +74,7 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
     private float posX3 = 0, posY3 = 0;
     private float posX4 = 0, posY4 = 0;
     private float posX5 = 0, posY5 = 0;
-    private String nombre,NombreEstacion;
+    private String NombreEstacion;
     private ArrayList<String> DatosEnEjeX = new ArrayList<>();
     private ArrayList<Entry> DatosEnEjeY = new ArrayList<>();
     private ArrayList<Entry> AcumuladoEnEjeY = new ArrayList<>();
@@ -85,14 +85,17 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
     private ArrayList<Entry> AcumuladoEnEjeYAdultoAdulto = new ArrayList<>();
     private ArrayList valoresX = new ArrayList();
     private ArrayList<ILineDataSet> lineDataSets = new ArrayList<>();
-    ArrayList<UnidadesCalor> listUC = new ArrayList<UnidadesCalor>();
+    private ArrayList<UnidadesCalor> listUC = new ArrayList<UnidadesCalor>();
     private String Nestacion;
     private final String Carpeta = "UnidadesCalor/", Ruta_Imagen =Carpeta+"UC";
     private Dialog dialog;
     private String fecpop1,fecpop2,fecpop3,fecpop4,fecpop5;
-    private int UCApop,UCApop1;
+    private String fase1 = "Preoviposición",fase2 = "Huevo",fase3 = "Oviposición",fase4 = "Larva pupa",fase5 = "Adulto adulto";
+    private String Recomendacion1, Recomendacion2, Recomendacion3, Recomendacion4, Recomendacion5;
+    private int UCApop1, UCApop2, UCApop3, UCApop4, UCApop5, UCAcontrol;
+    private int informa = 1;
     private View cuadroalerta,FondoAlertaEstacion;
-
+    private CharSequence nombre;
 
 
     @Override
@@ -134,8 +137,17 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
                 float y = e.getY();
 
                 if (x == posX1 && y == posY1) {
-                    Alerta(1);
+                    Alerta(fecpop1, String.valueOf(UCApop1), fase1, Recomendacion1);
+                }if (x == posX2 && y == posY2) {
+                    Alerta(fecpop2, String.valueOf(UCApop2), fase2, Recomendacion2);
+                }if (x == posX3 && y == posY3) {
+                    Alerta(fecpop3, String.valueOf(UCApop3), fase3, Recomendacion3);
+                }if (x == posX4 && y == posY4) {
+                    Alerta(fecpop4, String.valueOf(UCApop4), fase4, Recomendacion4);
+                }if (x == posX5 && y == posY5) {
+                    Alerta(fecpop5, String.valueOf(UCApop5), fase5, Recomendacion5);
                 }
+
             }
             @Override
             public void onNothingSelected() {
@@ -145,7 +157,7 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
 
     }
 
-    public void Alerta(int num) {
+    public void Alerta(String fecha, String UCA, String fase, String Recomendacion) {
         dialog.setContentView(R.layout.alerta_view);
 
         Alerta = (TextView) dialog.findViewById(R.id.Alerta);
@@ -156,30 +168,13 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
 
 
         Alerta.setText("Alerta");
-        if (num == 1) {
-            InformacionAlerta.setText(
-                    "Estación: " + NombreEstacion.replace("_", " ") + "\n\n" +
-                            "Fecha de alerta: " + fecpop1 + "\n\n" +
-                            "UCA a la fecha: " + String.valueOf(UCApop) + " UC" + "\n\n" +
-                            "Fase biológica estimada: Pupa" + "\n\n" +
-                            "Areas de influencia: 5 km de radio" + "\n\n" +
-                            "Recomendación: Método de control químico" + "\n\n");
-        }if (num == 2){
-            InformacionAlerta.setText(
-                    "Estación: " + NombreEstacion.replace("_", " ") + "\n\n" +
-                            "Fecha de alerta: " + fecpop2 + "\n\n" +
-                            "UCA a la fecha: " + String.valueOf(UCApop) + " UC" + "\n\n" +
-                            "Fase biológica estimada: Pupa" + "\n\n" +
-                            "Areas de influencia: 5 km de radio" + "\n\n" +
-                            "Recomendación: Método de control químico" + "\n\n");
-        }if (num == 2){
-            InformacionAlerta.setText(
-                    "Al día " + FechaF.getText().toString() + " \n\nSe han acumulado " + UCApop1 +
-                            " UC\n\nEn la estación " + NombreEstacion.replace("_"," ") + "\n\n" +
-                            "Acumulación diaria promedio: "+ Promedio + " UC\n\n" +
-                            "Se estiman " + Ndias(UCApop1) + " días para llegar a la fase de pupa \n\n" +
-                            "Periodo de consulta: \n" + FechaI.getText().toString() + " al " + FechaF.getText().toString());
-        }
+        InformacionAlerta.setText(
+                "Estación: " + NombreEstacion.replace("_", " ") + "\n\n" +
+                        "Fecha de alerta: " + fecha + "\n\n" +
+                        "UCA a la fecha: " + String.valueOf(UCA) + " UC" + "\n\n" +
+                        "Fase biológica estimada: " + fase + "\n\n" +
+                        "*Areas de influencia: 5 km de radio" + "\n\n" +
+                        "Recomendación: " + Recomendacion + "\n\n");
 
         cerrar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -203,6 +198,49 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
         dialog.show();
         FondoAlertaEstacion.setBackgroundColor(Color.argb(2,174,171,170));
     }
+
+
+    private void Informe(int UCA, double lim, String fase) {
+
+        dialog.setContentView(R.layout.alerta_view);
+
+        Alerta = (TextView) dialog.findViewById(R.id.Alerta);
+        InformacionAlerta = (TextView) dialog.findViewById(R.id.InformacionAlerta);
+        cerrar = (TextView) dialog.findViewById(R.id.cerrar);
+        Compartir = (ImageView) dialog.findViewById(R.id.Compartir);
+        cuadroalerta = (View) dialog.findViewById(R.id.FondoAlerta);
+
+            Alerta.setText("Información");
+            InformacionAlerta.setText(
+                    "Al día " + FechaF.getText().toString() + " \n\nSe han acumulado " + UCA +
+                            " UC\n\nEn la estación " + NombreEstacion.replace("_", " ") + "\n\n" +
+                            "Acumulación diaria promedio: " + Promedio + " UC\n\n" +
+                            "Se estiman " + Ndias(UCA,lim) + " días para llegar a la fase de " + fase +" \n\n" +
+                            "Periodo de consulta: \n" + FechaI.getText().toString() + " al " + FechaF.getText().toString());
+
+        cerrar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                FondoAlertaEstacion.setBackgroundColor(Color.parseColor("#ffffff"));
+            }
+        });
+
+        Compartir.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Bitmap screenshot = Screenshot.tomarRutadeScreenshot(cuadroalerta);
+                saveScreenshot(screenshot);
+                grabar();
+                Compartir();
+            }
+        });
+        dialog.setCancelable(false);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.show();
+        FondoAlertaEstacion.setBackgroundColor(Color.argb(2,174,171,170));
+    }
+
 
     private void saveScreenshot(Bitmap bitmap) {
 
@@ -305,7 +343,17 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
             startActivity(getIntent());
         }
         if (v == Pronostico){
-            Alerta(2);
+            if (informa == 1){
+                Informe(UCAcontrol,55.9,fase1);
+            }if (informa == 2){
+                Informe(UCAcontrol,122.1,fase2);
+            }if (informa == 3){
+                Informe(UCAcontrol,169.8,fase3);
+            }if (informa == 4){
+                Informe(UCAcontrol,715.1,fase4);
+            }if (informa == 5){
+                Informe(UCAcontrol,1327.4,fase5);
+            }
         }
     }
 
@@ -385,72 +433,55 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
                     AcumuladoEnEjeY.add(new Entry(i , (float) acumulado));
                     valoresX.add(result.get(i).getFecha());
 
-                    if(acumuladocontrol >= 55.9 && validar1) {
+                    if(acumulado >= 55.9 && validar1) {
                         AcumuladoEnEjeYPreoviposicion.add(new Entry(i, (float) acumulado));
                         posX1 = AcumuladoEnEjeYPreoviposicion.get(0).getX();
-                        System.out.println("Posición en X1: " + posX1);
                         posY1 = AcumuladoEnEjeYPreoviposicion.get(0).getY();
-                        System.out.println("Posición en Y1: " + posY1);
                         fecpop1 = result.get(i).getFecha();
-                        UCApop = (int) acumuladocontrol;
+                        UCApop1 = (int) acumulado;
                         validar1 = false;
-                        validar2 = true;
-                        acumuladocontrol = 0;
+                        informa = 2;
                     }
-                    if(acumuladocontrol >= 66.2 && validar2) {
-                        acumuladocontrol = acumuladocontrol + 55.9;
+                    if(acumulado >= 122.1 && validar2) {
                         AcumuladoEnEjeYHuevo.add(new Entry(i, (float) acumulado));
                         posX2 = AcumuladoEnEjeYHuevo.get(0).getX();
-                        System.out.println("Posición en X2: " + posX2);
                         posY2 = AcumuladoEnEjeYHuevo.get(0).getY();
-                        System.out.println("Posición en Y2: " + posY2);
                         fecpop2 = result.get(i).getFecha();
-                        UCApop = (int) acumuladocontrol;
+                        UCApop2 = (int) acumulado;
                         validar2 = false;
-                        validar3 = true;
-                        acumuladocontrol = 0;
+                        informa = 3;
                     }
-                    if(acumuladocontrol >= 47.7 && validar3) {
-                        acumuladocontrol = acumuladocontrol + 66.2;
+                    if(acumulado >= 169.8 && validar3) {
                         AcumuladoEnEjeYOviposicion.add(new Entry(i, (float) acumulado));
                         posX3 = AcumuladoEnEjeYOviposicion.get(0).getX();
-                        System.out.println("Posición en X3: " + posX3);
                         posY3 = AcumuladoEnEjeYOviposicion.get(0).getY();
-                        System.out.println("Posición en Y3: " + posY3);
                         fecpop3 = result.get(i).getFecha();
-                        UCApop = (int) acumuladocontrol;
+                        UCApop3 = (int) acumulado;
                         validar3 = false;
-                        validar4 = true;
-                        acumuladocontrol = 0;
+                        informa = 4;
                     }
-                    if(acumuladocontrol >= 545.3 && validar4) {
-                        acumuladocontrol = acumuladocontrol + 47.7;
+                    if(acumulado >= 715.1 && validar4) {
                         AcumuladoEnEjeYLarvaPupa.add(new Entry(i, (float) acumulado));
                         posX4 = AcumuladoEnEjeYLarvaPupa.get(0).getX();
-                        System.out.println("Posición en X4: " + posX4);
                         posY4 = AcumuladoEnEjeYLarvaPupa.get(0).getY();
-                        System.out.println("Posición en Y4: " + posY4);
                         fecpop4 = result.get(i).getFecha();
-                        UCApop = (int) acumuladocontrol;
+                        UCApop4 = (int) acumulado;
                         validar4 = false;
-                        validar5 = true;
+                        informa = 5;
                         acumuladocontrol = 0;
                     }
-                    if(acumuladocontrol >= 612.3 && validar5) {
-                        acumuladocontrol = acumuladocontrol + 545.3;
+                    if(acumulado >= 1327.4 && validar5) {
                         AcumuladoEnEjeYAdultoAdulto.add(new Entry(i, (float) acumulado));
                         posX5 = AcumuladoEnEjeYAdultoAdulto.get(0).getX();
-                        System.out.println("Posición en X5: " + posX5);
                         posY5 = AcumuladoEnEjeYAdultoAdulto.get(0).getY();
-                        System.out.println("Posición en Y5: " + posY5);
                         fecpop5 = result.get(i).getFecha();
-                        UCApop = (int) acumuladocontrol;
+                        UCApop5 = (int) acumulado;
                         validar5 = false;
                         Pronostico.setVisibility(View.INVISIBLE);
                         Pronostico.setEnabled(false);
                     }
+                    UCAcontrol = (int) acumulado;
                     Promedio = UCP(result.size());
-                    UCApop1 = (int)acumulado;
                     CSV += result.get(i).getFecha() + "," + result.get(i).getTmax() + "," + result.get(i).getTmin() + "," + UnidadesCalor(result.get(i).getTmax(), result.get(i).getTmin()) +","+ acumulado +"\n";
                 }
 
@@ -567,7 +598,6 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
 
 
                 lineChart.invalidate();
-                lineChart.fitScreen();
 
 
             } else {
@@ -660,12 +690,12 @@ public class Informacion_Estacion extends AppCompatActivity implements View.OnCl
 
 
     private Double UCP(int vDias){
-        double UCP;
-        return UCP = UCApop1 / vDias;
+        double UCP; //Unidad Calor Promedio
+        return UCP = UCAcontrol / vDias;
     }
-    private int Ndias(int UCacumuladas){
+    private int Ndias(int UCacumuladas, double lim){
         int  Prediccion = 0;
-        while(UCacumuladas <1019){
+        while(UCacumuladas < lim){
             Prediccion += 1;
             UCacumuladas += Promedio;
         }
